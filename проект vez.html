@@ -1,0 +1,1861 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Спокойствие — поддержка при панических атаках и депрессии</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#eef3fb;--bg-2:#f7f4ff;--card:#ffffff;--card-2:#f6f9ff;
+  --primary:#6c8cff;--primary-dark:#4a6be0;--lavender:#b8a7e8;
+  --mint:#9ee6c8;--peach:#ffc9b3;
+  --text:#2b3550;--muted:#6b7699;
+  --border:rgba(108,140,255,.15);--border-strong:rgba(108,140,255,.35);
+  --header-bg:rgba(255,255,255,.72);--header-bg-scrolled:rgba(255,255,255,.88);
+  --ghost-bg:rgba(255,255,255,.9);
+  --stage-1:#f0ecff;--stage-2:#e4f5ee;
+  --tube-glass:linear-gradient(180deg,rgba(255,255,255,.4),rgba(255,255,255,.85));
+  --pet-shadow:rgba(108,140,255,.35);
+  --shadow:0 10px 30px rgba(108,140,255,.15);
+  --shadow-lg:0 25px 60px rgba(108,140,255,.28);
+  --radius:22px;--ease:cubic-bezier(.34,1.56,.64,1);
+}
+html[data-theme="dark"]{
+  --bg:#0f1425;--bg-2:#161c30;--card:#1a2138;--card-2:#1e2540;
+  --primary:#8aa3ff;--primary-dark:#a9bcff;--lavender:#b8a7e8;
+  --mint:#7fd9b3;--peach:#ffb48f;
+  --text:#e8ecf7;--muted:#96a2c4;
+  --border:rgba(138,163,255,.18);--border-strong:rgba(138,163,255,.4);
+  --header-bg:rgba(15,20,37,.72);--header-bg-scrolled:rgba(15,20,37,.9);
+  --ghost-bg:rgba(26,33,56,.9);
+  --stage-1:#20284a;--stage-2:#1b2a3c;
+  --tube-glass:linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.14));
+  --pet-shadow:rgba(138,163,255,.4);
+  --shadow:0 10px 30px rgba(0,0,0,.4);
+  --shadow-lg:0 25px 60px rgba(0,0,0,.55);
+}
+html,body{transition:background-color .5s ease, color .5s ease}
+html{scroll-behavior:smooth}
+body{
+  font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
+  background:var(--bg);color:var(--text);
+  line-height:1.6;overflow-x:hidden;position:relative;
+}
+.bg-bubbles.paused .bubble{animation-play-state:paused}
+.bg-bubbles.inactive .bubble{animation-play-state:paused}
+.bg-bubbles{position:fixed;inset:0;z-index:-2;overflow:hidden;pointer-events:none;contain:strict}
+.bubble{
+  position:absolute;border-radius:50%;
+  background:radial-gradient(circle at 30% 30%,rgba(255,255,255,.9),rgba(184,167,232,.35) 60%,rgba(108,140,255,.15));
+  animation:floatUp linear infinite;opacity:.55;
+  will-change:transform;transform:translateZ(0);
+}
+html[data-theme="dark"] .bubble{
+  background:radial-gradient(circle at 30% 30%,rgba(138,163,255,.5),rgba(184,167,232,.2) 60%,rgba(108,140,255,.06));
+  opacity:.35;
+}
+@keyframes floatUp{
+  0%{transform:translate3d(0,0,0) scale(1);opacity:0}
+  10%{opacity:.6}
+  90%{opacity:.6}
+  100%{transform:translate3d(40px,-110vh,0) scale(.8);opacity:0}
+}
+header{
+  position:sticky;top:0;z-index:100;
+  backdrop-filter:blur(18px) saturate(180%);
+  -webkit-backdrop-filter:blur(18px) saturate(180%);
+  background:var(--header-bg);
+  border-bottom:1px solid var(--border);
+  transition:box-shadow .3s, background .5s;
+}
+header.scrolled{background:var(--header-bg-scrolled);box-shadow:0 8px 30px rgba(108,140,255,.12)}
+.nav{max-width:1180px;margin:0 auto;padding:12px 24px;display:flex;align-items:center;justify-content:space-between;gap:20px}
+.nav-left{display:flex;align-items:center;gap:14px;flex:1}
+.nav-right{display:flex;align-items:center;gap:8px}
+.logo{
+  display:flex;align-items:center;gap:10px;
+  font-weight:800;font-size:1.25rem;letter-spacing:-.5px;
+  background:linear-gradient(135deg,var(--primary),var(--lavender));
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+  transition:transform .4s var(--ease);
+}
+.logo:hover{transform:scale(1.04)}
+.logo span.badge{
+  width:38px;height:38px;border-radius:12px;
+  background:linear-gradient(135deg,var(--primary),var(--lavender));
+  display:grid;place-items:center;font-size:1.1rem;
+  box-shadow:0 6px 16px rgba(108,140,255,.4);
+  transition:transform .5s var(--ease), box-shadow .3s;
+}
+.logo:hover span.badge{transform:rotate(-12deg) scale(1.1);box-shadow:0 10px 24px rgba(108,140,255,.55)}
+nav ul{display:flex;gap:6px;list-style:none;flex-wrap:wrap}
+nav a{
+  text-decoration:none;color:var(--muted);font-weight:600;font-size:.95rem;
+  padding:9px 15px;border-radius:12px;
+  transition:background-color .28s ease, color .28s ease, transform .28s var(--ease);
+  position:relative;
+}
+nav a:hover{background:rgba(108,140,255,.12);color:var(--primary-dark);transform:translateY(-2px)}
+nav a:active{transform:translateY(0) scale(.96)}
+.burger{
+  display:none;background:none;border:none;font-size:1.6rem;cursor:pointer;
+  color:var(--primary-dark);transition:transform .3s var(--ease);
+}
+.burger:hover{transform:rotate(90deg)}
+.theme-switch{
+  position:relative;width:64px;height:32px;border-radius:20px;
+  border:2px solid var(--border-strong);
+  background:linear-gradient(135deg,rgba(184,167,232,.25),rgba(108,140,255,.2));
+  cursor:pointer;transition:transform .4s var(--ease), box-shadow .3s;overflow:hidden;
+  -webkit-tap-highlight-color:transparent;flex-shrink:0;
+}
+.theme-switch:hover{transform:scale(1.05);box-shadow:0 6px 18px rgba(108,140,255,.25)}
+.theme-switch:active{transform:scale(.94)}
+.theme-switch::before{
+  content:'';position:absolute;top:50%;left:4px;width:22px;height:22px;border-radius:50%;
+  background:linear-gradient(135deg,#ffd166,#ff9b78);
+  box-shadow:0 2px 8px rgba(255,155,120,.5);
+  transform:translateY(-50%);transition:left .5s var(--ease), background .5s;z-index:2;
+}
+html[data-theme="dark"] .theme-switch::before{
+  left:calc(100% - 26px);
+  background:linear-gradient(135deg,#b8a7e8,#6c8cff);
+  box-shadow:0 2px 8px rgba(108,140,255,.6);
+}
+.theme-switch .icon-sun,.theme-switch .icon-moon{
+  position:absolute;top:50%;transform:translateY(-50%);
+  font-size:.85rem;line-height:1;z-index:3;transition:opacity .4s;
+  user-select:none;pointer-events:none;
+}
+.theme-switch .icon-sun{left:9px;opacity:0}
+.theme-switch .icon-moon{right:9px;opacity:1}
+html[data-theme="dark"] .theme-switch .icon-sun{opacity:1}
+html[data-theme="dark"] .theme-switch .icon-moon{opacity:0}
+.hero{
+  position:relative;max-width:1180px;margin:0 auto;padding:70px 24px 60px;
+  display:grid;grid-template-columns:1.15fr .85fr;gap:50px;align-items:center;
+}
+.hero::before,.hero::after{
+  content:'';position:absolute;border-radius:50%;z-index:-1;
+  pointer-events:none;will-change:transform;
+}
+.hero::before{
+  top:-120px;right:-160px;width:520px;height:520px;
+  background:radial-gradient(circle,rgba(184,167,232,.4),transparent 70%);
+  filter:blur(20px);animation:blob 14s ease-in-out infinite;transition:background .5s;
+}
+.hero::after{
+  bottom:-180px;left:-180px;width:460px;height:460px;
+  background:radial-gradient(circle,rgba(158,230,200,.45),transparent 70%);
+  filter:blur(20px);animation:blob 18s ease-in-out infinite reverse;transition:background .5s;
+}
+.hero.paused::before,.hero.paused::after{animation-play-state:paused}
+html[data-theme="dark"] .hero::before{background:radial-gradient(circle,rgba(138,163,255,.35),transparent 70%)}
+html[data-theme="dark"] .hero::after{background:radial-gradient(circle,rgba(127,217,179,.25),transparent 70%)}
+@keyframes blob{
+  0%,100%{transform:translate3d(0,0,0) scale(1)}
+  50%{transform:translate3d(30px,-30px,0) scale(1.1)}
+}
+.hero h1{
+  font-size:clamp(2rem,4.5vw,3.2rem);line-height:1.15;font-weight:800;
+  letter-spacing:-1.2px;margin-bottom:18px;animation:slideInLeft .8s var(--ease) both;
+}
+.hero h1 em{
+  font-style:normal;
+  background:linear-gradient(135deg,var(--primary),var(--lavender) 60%,var(--mint));
+  background-size:200% 200%;
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+  animation:gradientShift 6s ease infinite;
+}
+.hero.paused h1 em{animation-play-state:paused}
+@keyframes gradientShift{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+.hero p.lead{font-size:1.1rem;color:var(--muted);max-width:520px;margin-bottom:28px;animation:slideInLeft .8s var(--ease) .15s both}
+.hero-btns{display:flex;gap:14px;flex-wrap:wrap;animation:slideInLeft .8s var(--ease) .3s both}
+@keyframes slideInLeft{from{opacity:0;transform:translateX(-40px)}to{opacity:1;transform:none}}
+.btn{
+  position:relative;overflow:hidden;display:inline-flex;align-items:center;gap:8px;
+  padding:14px 26px;border-radius:16px;border:none;cursor:pointer;
+  font-size:1rem;font-weight:700;font-family:inherit;text-decoration:none;
+  transition:transform .25s var(--ease), box-shadow .3s, filter .3s, background .5s, color .5s;
+  -webkit-tap-highlight-color:transparent;
+}
+.btn::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(120deg,transparent 30%,rgba(255,255,255,.5) 50%,transparent 70%);
+  transform:translateX(-120%);transition:transform .7s ease;pointer-events:none;
+}
+.btn:hover::before{transform:translateX(120%)}
+.btn:active{transform:scale(.94)}
+.btn-primary{background:linear-gradient(135deg,var(--primary),#8a7bf0);color:#fff;box-shadow:0 10px 24px rgba(108,140,255,.45)}
+.btn-primary:hover{transform:translateY(-3px) scale(1.03);box-shadow:0 18px 34px rgba(108,140,255,.6);filter:brightness(1.06)}
+.btn-primary:active{transform:scale(.94);box-shadow:0 6px 14px rgba(108,140,255,.4)}
+.btn-ghost{background:var(--ghost-bg);color:var(--primary-dark);box-shadow:0 6px 18px rgba(108,140,255,.15)}
+.btn-ghost:hover{transform:translateY(-3px) scale(1.03);box-shadow:0 14px 30px rgba(108,140,255,.28)}
+.btn-ghost:active{transform:scale(.94)}
+.ripple{position:absolute;border-radius:50%;background:rgba(255,255,255,.55);transform:scale(0);animation:rippleAnim .6s ease-out;pointer-events:none;will-change:transform,opacity}
+@keyframes rippleAnim{to{transform:scale(4);opacity:0}}
+.hero-visual{display:flex;justify-content:center;align-items:center;animation:slideInRight 1s var(--ease) .2s both}
+@keyframes slideInRight{from{opacity:0;transform:translateX(50px) scale(.85)}to{opacity:1;transform:none}}
+.breath{
+  width:270px;height:270px;border-radius:50%;
+  background:radial-gradient(circle at 32% 28%,#dfe9ff,#a9c2ff 55%,#8fa9ff);
+  box-shadow:0 0 0 18px rgba(108,140,255,.09),0 0 0 46px rgba(108,140,255,.05),0 25px 50px rgba(108,140,255,.35) inset;
+  display:grid;place-items:center;color:#fff;font-weight:700;font-size:1.15rem;letter-spacing:.5px;
+  animation:breathe 9s ease-in-out infinite;text-align:center;padding:20px;
+  position:relative;transition:background .5s, box-shadow .5s;will-change:transform;
+}
+.hero.paused .breath{animation-play-state:paused}
+html[data-theme="dark"] .breath{
+  background:radial-gradient(circle at 32% 28%,#3a4878,#2b3a6e 55%,#1e2a58);
+  box-shadow:0 0 0 18px rgba(138,163,255,.1),0 0 0 46px rgba(138,163,255,.05),0 25px 50px rgba(138,163,255,.25) inset;
+}
+.breath::after{
+  content:'';position:absolute;inset:-20px;border-radius:50%;
+  border:2px solid rgba(108,140,255,.25);animation:ring 9s ease-in-out infinite;
+  will-change:transform,opacity;
+}
+.hero.paused .breath::after{animation-play-state:paused}
+@keyframes ring{0%,100%{transform:scale(.85);opacity:.8}50%{transform:scale(1.2);opacity:0}}
+@keyframes breathe{0%,100%{transform:scale(.86)}50%{transform:scale(1.1)}}
+.section{max-width:1180px;margin:0 auto;padding:60px 24px;content-visibility:auto;contain-intrinsic-size:auto 800px}
+.section-head{text-align:center;max-width:680px;margin:0 auto 42px}
+.section-head h2{font-size:clamp(1.6rem,3vw,2.3rem);font-weight:800;letter-spacing:-.8px;margin-bottom:12px}
+.section-head p{color:var(--muted);font-size:1.03rem}
+.reveal{opacity:0;transform:translateY(40px);transition:opacity .6s ease, transform .6s var(--ease)}
+.reveal.visible{opacity:1;transform:none}
+.reveal.delay-1{transition-delay:.1s}
+.reveal.delay-2{transition-delay:.2s}
+.reveal.delay-3{transition-delay:.3s}
+.grid{display:grid;gap:22px}
+.grid-3{grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
+.grid-2{grid-template-columns:repeat(auto-fit,minmax(320px,1fr))}
+.card{
+  background:var(--card);border-radius:var(--radius);padding:26px;
+  box-shadow:var(--shadow);border:1px solid var(--border);
+  transition:transform .35s var(--ease), box-shadow .3s, border-color .3s, background .5s;
+  position:relative;overflow:hidden;
+}
+.card:hover{transform:translateY(-8px);box-shadow:var(--shadow-lg);border-color:var(--border-strong)}
+.card .ico{
+  width:52px;height:52px;border-radius:16px;display:grid;place-items:center;
+  font-size:1.5rem;margin-bottom:16px;transition:transform .4s var(--ease);
+}
+.card:hover .ico{transform:rotate(-10deg) scale(1.12)}
+.ico-blue{background:rgba(108,140,255,.15)}
+.ico-lav{background:rgba(184,167,232,.2)}
+.ico-mint{background:rgba(158,230,200,.25)}
+.ico-peach{background:rgba(255,201,179,.3)}
+html[data-theme="dark"] .ico-blue{background:rgba(138,163,255,.2)}
+html[data-theme="dark"] .ico-lav{background:rgba(184,167,232,.22)}
+html[data-theme="dark"] .ico-mint{background:rgba(127,217,179,.2)}
+html[data-theme="dark"] .ico-peach{background:rgba(255,180,143,.22)}
+.card h3{font-size:1.15rem;margin-bottom:10px;font-weight:700}
+.card p{color:var(--muted);font-size:.95rem}
+.card ul{color:var(--muted);font-size:.95rem;padding-left:20px;margin-top:8px}
+.card li{margin-bottom:6px}
+.test-box{
+  background:linear-gradient(160deg,var(--card),var(--card-2));
+  border-radius:26px;padding:34px;box-shadow:var(--shadow);border:1px solid var(--border);
+  transition:box-shadow .4s, background .5s, border-color .5s;
+}
+.test-box:hover{box-shadow:var(--shadow-lg)}
+.warning{
+  background:rgba(255,201,179,.35);border-left:5px solid #ff9b78;
+  border-radius:14px;padding:16px 20px;margin-bottom:26px;font-size:.92rem;color:#7a3f28;
+}
+html[data-theme="dark"] .warning{background:rgba(255,180,143,.15);color:#ffd4bd}
+.warning b{color:#5c2a17}
+html[data-theme="dark"] .warning b{color:#ffb48f}
+.q{margin-bottom:20px}
+.q p{font-weight:600;margin-bottom:10px;font-size:.98rem}
+.opts{display:flex;gap:8px;flex-wrap:wrap}
+.opt{
+  position:relative;overflow:hidden;padding:9px 16px;border-radius:12px;
+  border:2px solid var(--border-strong);background:var(--card);cursor:pointer;
+  font-family:inherit;font-size:.87rem;font-weight:600;color:var(--muted);
+  transition:transform .25s var(--ease), background .3s, color .3s, border-color .3s, box-shadow .3s;
+  -webkit-tap-highlight-color:transparent;
+}
+.opt:hover{border-color:var(--primary);color:var(--primary-dark);transform:translateY(-2px);box-shadow:0 6px 14px rgba(108,140,255,.18)}
+.opt:active{transform:scale(.95)}
+.opt.on{
+  background:linear-gradient(135deg,var(--primary),#8a7bf0);color:#fff;border-color:transparent;
+  box-shadow:0 8px 20px rgba(108,140,255,.4);transform:translateY(-2px) scale(1.03);
+}
+.result{margin-top:26px;padding:24px;border-radius:18px;background:rgba(158,230,200,.28);display:none}
+html[data-theme="dark"] .result{background:rgba(127,217,179,.16)}
+.result.show{display:block;animation:fadeUp .5s var(--ease)}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px) scale(.98)}to{opacity:1;transform:none}}
+.result h3{margin-bottom:10px}
+.result .score{font-size:2.2rem;font-weight:800;color:var(--primary-dark)}
+.game-card{
+  background:var(--card);border-radius:var(--radius);padding:26px;
+  box-shadow:var(--shadow);border:1px solid var(--border);
+  transition:transform .35s var(--ease), box-shadow .3s, background .5s, border-color .5s;
+}
+.game-card:hover{transform:translateY(-6px);box-shadow:var(--shadow-lg)}
+.game-card h3{margin-bottom:6px;display:flex;align-items:center;gap:10px}
+.game-card>p.hint{color:var(--muted);font-size:.9rem;margin-bottom:18px}
+.ttt{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;max-width:280px;margin:0 auto 16px}
+.ttt button{
+  aspect-ratio:1;border-radius:16px;border:none;cursor:pointer;
+  font-size:2.2rem;font-weight:800;font-family:inherit;
+  background:rgba(108,140,255,.1);color:var(--primary-dark);
+  transition:transform .25s var(--ease), background .3s, box-shadow .3s;
+  -webkit-tap-highlight-color:transparent;position:relative;overflow:hidden;
+}
+html[data-theme="dark"] .ttt button{background:rgba(138,163,255,.12)}
+.ttt button:hover:not(:disabled){background:rgba(108,140,255,.22);transform:scale(1.08);box-shadow:0 8px 18px rgba(108,140,255,.25)}
+html[data-theme="dark"] .ttt button:hover:not(:disabled){background:rgba(138,163,255,.25)}
+.ttt button:active:not(:disabled){transform:scale(.94)}
+.ttt button:disabled{cursor:default}
+.ttt button.win{background:linear-gradient(135deg,#9ee6c8,#6cd6ab);color:#fff;animation:winPulse 1.2s ease infinite}
+.games-section.paused .ttt button.win{animation-play-state:paused}
+@keyframes winPulse{
+  0%,100%{transform:scale(1);box-shadow:0 0 0 0 rgba(110,214,171,.6)}
+  50%{transform:scale(1.06);box-shadow:0 0 0 12px rgba(110,214,171,0)}
+}
+.game-status{text-align:center;font-weight:700;margin-bottom:12px;min-height:26px;color:var(--primary-dark)}
+.game-foot{display:flex;justify-content:center;gap:10px}
+.btn-sm{
+  position:relative;overflow:hidden;padding:9px 18px;border-radius:12px;border:none;cursor:pointer;
+  font-family:inherit;font-weight:700;font-size:.88rem;
+  background:rgba(108,140,255,.14);color:var(--primary-dark);
+  transition:transform .25s var(--ease), background .3s, box-shadow .3s;
+  -webkit-tap-highlight-color:transparent;
+}
+html[data-theme="dark"] .btn-sm{background:rgba(138,163,255,.16)}
+.btn-sm:hover{background:rgba(108,140,255,.26);transform:translateY(-2px);box-shadow:0 8px 18px rgba(108,140,255,.22)}
+.btn-sm:active{transform:scale(.94)}
+.tubes{display:flex;gap:18px;justify-content:center;flex-wrap:wrap;margin:22px 0;align-items:flex-end;min-height:190px}
+.tube{
+  width:64px;height:186px;border:3px solid var(--border-strong);border-top:none;
+  border-radius:0 0 26px 26px;background:var(--tube-glass);
+  display:flex;flex-direction:column-reverse;justify-content:flex-start;
+  padding:6px;gap:3px;cursor:pointer;
+  transition:transform .25s var(--ease), border-color .25s, box-shadow .3s, background .5s;
+  position:relative;box-sizing:border-box;-webkit-tap-highlight-color:transparent;
+}
+.tube:hover{transform:translateY(-6px);border-color:var(--primary);box-shadow:0 12px 26px rgba(108,140,255,.22)}
+.tube.sel{
+  border-color:var(--primary-dark);
+  box-shadow:0 0 0 4px rgba(108,140,255,.25), 0 14px 30px rgba(108,140,255,.3);
+  transform:translateY(-12px);
+}
+.tube.shake{animation:shake .3s}
+@keyframes shake{
+  0%,100%{transform:translateY(-5px) translateX(0)}
+  25%{transform:translateY(-5px) translateX(-6px)}
+  75%{transform:translateY(-5px) translateX(6px)}
+}
+.seg{height:40px;border-radius:7px;flex-shrink:0;box-shadow:0 2px 4px rgba(0,0,0,.08) inset}
+/* ================================================================
+   ПИТОМЕЦ
+   ================================================================ */
+.pet-wrap{
+  display:grid;grid-template-columns:1fr 1fr;gap:26px;
+  background:linear-gradient(160deg,var(--card),var(--bg-2));
+  border-radius:26px;padding:30px;box-shadow:var(--shadow);border:1px solid var(--border);
+  transition:box-shadow .4s, background .5s, border-color .5s;
+}
+.pet-wrap:hover{box-shadow:var(--shadow-lg)}
+.pet-stage{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  background:radial-gradient(circle at 50% 30%,var(--stage-1),var(--stage-2));
+  border-radius:22px;padding:28px;position:relative;min-height:420px;
+  overflow:hidden;transition:background .5s;contain:paint layout;
+}
+.pet-stage::before{
+  content:'';position:absolute;top:-50%;left:-50%;width:200%;height:200%;
+  background:conic-gradient(from 0deg,transparent,rgba(184,167,232,.15),transparent 30%);
+  animation:stageShine 12s linear infinite;pointer-events:none;will-change:transform;
+}
+.pet-section.paused .pet-stage::before{animation-play-state:paused}
+@keyframes stageShine{to{transform:rotate(360deg)}}
+.pet-shadow{
+  position:absolute;bottom:100px;left:50%;transform:translateX(-50%);
+  width:150px;height:18px;border-radius:50%;
+  background:radial-gradient(ellipse,var(--pet-shadow),transparent 70%);
+  animation:shadowPulse 3s ease-in-out infinite;z-index:0;
+  will-change:transform,opacity;
+}
+.pet-section.paused .pet-shadow{animation-play-state:paused}
+@keyframes shadowPulse{
+  0%,100%{transform:translateX(-50%) scale(1);opacity:.55}
+  50%{transform:translateX(-50%) scale(.85);opacity:.35}
+}
+.pet-svg-wrap{
+  position:relative;z-index:1;
+  width:230px;height:260px;
+  cursor:pointer;animation:idle 3s ease-in-out infinite;
+  transition:filter .3s;
+  filter:drop-shadow(0 16px 26px rgba(108,140,255,.3));
+  will-change:transform;transform:translateZ(0);
+}
+.pet-svg-wrap:hover{filter:drop-shadow(0 20px 34px rgba(108,140,255,.5))}
+.pet-svg-wrap svg{width:100%;height:100%;display:block;overflow:visible}
+.pet-svg-wrap.jump{animation:jump .55s var(--ease)}
+.pet-section.paused .pet-svg-wrap,
+.pet-section.paused .pet-svg-wrap .ear-wiggle,
+.pet-section.paused .pet-svg-wrap .ear-wiggle-r,
+.pet-section.paused .pet-svg-wrap .tail-wag,
+.pet-section.paused .pet-svg-wrap .blink{
+  animation-play-state:paused;
+}
+@keyframes idle{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+@keyframes jump{
+  0%{transform:translateY(0) scale(1)}
+  40%{transform:translateY(-42px) scale(1.14) rotate(-5deg)}
+  70%{transform:translateY(-10px) scale(1.06) rotate(2deg)}
+  100%{transform:translateY(0) scale(1)}
+}
+.ear-wiggle{transform-origin:center bottom;animation:earWiggle 3.5s ease-in-out infinite;will-change:transform}
+.ear-wiggle-r{transform-origin:center bottom;animation:earWiggleR 3.5s ease-in-out infinite;will-change:transform}
+@keyframes earWiggle{
+  0%,100%{transform:rotate(0deg)}
+  40%{transform:rotate(-3.5deg)}
+  70%{transform:rotate(2.5deg)}
+}
+@keyframes earWiggleR{
+  0%,100%{transform:rotate(0deg)}
+  40%{transform:rotate(3.5deg)}
+  70%{transform:rotate(-2.5deg)}
+}
+.tail-wag{animation:tailWag 2.8s ease-in-out infinite;will-change:transform}
+@keyframes tailWag{
+  0%,100%{transform:rotate(0deg)}
+  50%{transform:rotate(5deg)}
+}
+.blink{transform-origin:center;animation:blink 4.2s ease-in-out infinite;will-change:transform}
+@keyframes blink{
+  0%,42%,58%,100%{transform:scaleY(1)}
+  48%,52%{transform:scaleY(.05)}
+}
+.pet-name{
+  margin-top:14px;font-weight:800;font-size:1.3rem;color:var(--primary-dark);
+  background:var(--ghost-bg);padding:8px 22px;border-radius:16px;
+  box-shadow:0 8px 20px rgba(108,140,255,.2);z-index:1;position:relative;
+  transition:background .5s, transform .25s var(--ease);
+}
+.pet-name:hover{transform:scale(1.06)}
+.pet-panel{display:flex;flex-direction:column;gap:16px}
+.stat-row{display:flex;align-items:center;gap:12px}
+.stat-row .lbl{width:120px;font-size:.9rem;font-weight:600;color:var(--muted)}
+.bar{
+  flex:1;height:14px;border-radius:10px;background:rgba(108,140,255,.13);
+  overflow:hidden;box-shadow:0 2px 5px rgba(0,0,0,.05) inset;transition:background .5s;
+}
+html[data-theme="dark"] .bar{background:rgba(138,163,255,.15)}
+.bar i{display:block;height:100%;border-radius:10px;transition:width .5s var(--ease);position:relative}
+.bar.food i{background:linear-gradient(90deg,#ffb37a,#ff8f5e)}
+.bar.mood i{background:linear-gradient(90deg,#9ee6c8,#5fd6a4)}
+.bar.energy i{background:linear-gradient(90deg,#b8a7e8,#8a7bf0)}
+.pet-actions{display:flex;gap:10px;flex-wrap:wrap}
+.pet-actions button{
+  position:relative;overflow:hidden;flex:1;min-width:110px;padding:12px;border-radius:14px;border:none;
+  cursor:pointer;font-family:inherit;font-weight:700;font-size:.9rem;
+  background:rgba(108,140,255,.13);color:var(--primary-dark);
+  transition:transform .25s var(--ease), background .3s, box-shadow .3s;
+  -webkit-tap-highlight-color:transparent;
+}
+html[data-theme="dark"] .pet-actions button{background:rgba(138,163,255,.15)}
+.pet-actions button:hover{background:rgba(108,140,255,.28);transform:translateY(-3px) scale(1.02);box-shadow:0 10px 22px rgba(108,140,255,.25)}
+.pet-actions button:active{transform:scale(.94)}
+.wardrobe-title{
+  font-size:.85rem;font-weight:700;color:var(--muted);
+  text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;
+}
+.wardrobe{display:flex;gap:8px;flex-wrap:wrap}
+.wardrobe button{
+  width:60px;height:60px;border-radius:16px;border:2px solid transparent;
+  background:rgba(184,167,232,.16);cursor:pointer;
+  transition:transform .25s var(--ease), background .3s, border-color .3s, box-shadow .3s;
+  -webkit-tap-highlight-color:transparent;
+  display:grid;place-items:center;padding:4px;
+}
+html[data-theme="dark"] .wardrobe button{background:rgba(184,167,232,.14)}
+.wardrobe button svg{width:100%;height:100%;display:block}
+.wardrobe button:hover{transform:scale(1.15) rotate(-6deg);background:rgba(184,167,232,.32)}
+.wardrobe button:active{transform:scale(.94)}
+.wardrobe button.on{border-color:var(--primary);background:rgba(108,140,255,.22);box-shadow:0 6px 16px rgba(108,140,255,.28)}
+.pet-types{display:flex;gap:10px;flex-wrap:wrap}
+.pet-types button{
+  width:70px;height:70px;border-radius:18px;border:2px solid transparent;
+  background:rgba(108,140,255,.08);cursor:pointer;
+  transition:transform .3s var(--ease), background .3s, border-color .3s, box-shadow .3s;
+  padding:6px;-webkit-tap-highlight-color:transparent;display:grid;place-items:center;
+}
+html[data-theme="dark"] .pet-types button{background:rgba(138,163,255,.1)}
+.pet-types button svg{width:100%;height:100%;display:block}
+.pet-types button:hover{transform:scale(1.12) translateY(-3px);background:rgba(108,140,255,.2);box-shadow:0 10px 22px rgba(108,140,255,.25)}
+.pet-types button:active{transform:scale(.94)}
+.pet-types button.on{
+  border-color:var(--primary);
+  background:linear-gradient(135deg,rgba(108,140,255,.28),rgba(184,167,232,.28));
+  box-shadow:0 8px 20px rgba(108,140,255,.35);transform:scale(1.06);
+}
+footer{
+  margin-top:60px;padding:44px 24px 34px;
+  background:linear-gradient(160deg,#2b3550,#3a4670);color:#c9d3f0;
+  position:relative;overflow:hidden;transition:background .5s;
+}
+html[data-theme="dark"] footer{background:linear-gradient(160deg,#080b18,#0f1425)}
+footer::before{
+  content:'';position:absolute;top:-50%;right:-100px;width:400px;height:400px;border-radius:50%;
+  background:radial-gradient(circle,rgba(108,140,255,.25),transparent 70%);
+  filter:blur(30px);pointer-events:none;
+}
+.foot-inner{max-width:1180px;margin:0 auto;display:grid;gap:26px;position:relative}
+footer h4{color:#fff;margin-bottom:12px;font-size:1.05rem}
+footer p,footer li{font-size:.9rem;color:#a8b3d8}
+footer ul{list-style:none}
+footer li{margin-bottom:6px}
+.crisis{background:rgba(255,155,120,.14);border-left:4px solid #ff9b78;border-radius:12px;padding:16px 20px}
+.crisis b{color:#ffc9b3}
+.copyright{
+  max-width:1180px;margin:26px auto 0;padding-top:20px;
+  border-top:1px solid rgba(255,255,255,.1);
+  font-size:.82rem;color:#8a95bd;text-align:center;position:relative;
+}
+@media(max-width:900px){
+  .hero{grid-template-columns:1fr;text-align:center;padding-top:44px}
+  .hero p.lead{margin-inline:auto}
+  .hero-btns{justify-content:center}
+  .hero-visual{order:-1}
+  .breath{width:200px;height:200px;font-size:1rem}
+  .pet-wrap{grid-template-columns:1fr}
+}
+@media(max-width:760px){
+  nav ul{
+    display:none;position:absolute;top:100%;left:0;right:0;
+    background:var(--header-bg-scrolled);flex-direction:column;
+    padding:14px;gap:4px;box-shadow:0 12px 30px rgba(108,140,255,.18);
+    border-bottom:1px solid var(--border);animation:slideDown .3s var(--ease);
+    backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+  }
+  @keyframes slideDown{from{opacity:0;transform:translateY(-12px)}to{opacity:1;transform:none}}
+  nav ul.open{display:flex}
+  .burger{display:block}
+  .section{padding:44px 18px}
+  .test-box{padding:22px}
+  .nav{padding:10px 16px}
+  .theme-switch{width:54px;height:28px}
+  .theme-switch::before{width:18px;height:18px}
+  html[data-theme="dark"] .theme-switch::before{left:calc(100% - 22px)}
+}
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{
+    animation-duration:.01ms !important;
+    animation-iteration-count:1 !important;
+    transition-duration:.01ms !important;
+  }
+}
+</style>
+</head>
+<body>
+
+<div class="bg-bubbles" id="bubbles"></div>
+
+<header id="header">
+  <div class="nav">
+    <div class="nav-left">
+      <a href="#top" class="logo" style="text-decoration:none">
+        <span class="badge">🫧</span> Спокойствие
+      </a>
+    </div>
+    <nav class="nav-right">
+      <ul id="navList">
+        <li><a href="#about">О панических атаках</a></li>
+        <li><a href="#test">Тест</a></li>
+        <li><a href="#games">Игры</a></li>
+        <li><a href="#pet">Питомец</a></li>
+      </ul>
+      <button class="theme-switch" id="themeSwitch" aria-label="Переключить тему">
+        <span class="icon-sun">🌙</span>
+        <span class="icon-moon">☀️</span>
+      </button>
+      <button class="burger" id="burger" aria-label="Меню">☰</button>
+    </nav>
+  </div>
+</header>
+
+<section class="hero" id="top">
+  <div>
+    <h1>Ты не один.<br>Здесь можно <em>выдохнуть</em>.</h1>
+    <p class="lead">
+      Спокойное место для тех, кто сталкивается с паническими атаками
+      и тяжёлыми состояниями. Понятная информация, упражнения,
+      отвлекающие игры и маленький питомец, который всегда тебе рад.
+    </p>
+    <div class="hero-btns">
+      <a href="#about" class="btn btn-primary">Узнать больше →</a>
+      <a href="#games" class="btn btn-ghost">🎮 Отвлечься</a>
+    </div>
+  </div>
+  <div class="hero-visual">
+    <div class="breath">Дыши медленно<br>вдох · 4 · выдох · 6</div>
+  </div>
+</section>
+
+<section class="section" id="about">
+  <div class="section-head reveal">
+    <h2>Что важно знать</h2>
+    <p>Знание — это первый шаг к тому, чтобы перестать бояться собственных ощущений.</p>
+  </div>
+
+  <div class="grid grid-3">
+    <div class="card reveal">
+      <div class="ico ico-blue">🧠</div>
+      <h3>Что такое паническая атака</h3>
+      <p>Это резкий приступ сильного страха, который длится обычно 5–20 минут.
+         Мозг ошибочно включает «режим опасности», хотя реальной угрозы нет.
+         Это неприятно, но <b>не опасно для жизни</b>.</p>
+    </div>
+    <div class="card reveal delay-1">
+      <div class="ico ico-lav">🔍</div>
+      <h3>Из-за чего это бывает</h3>
+      <ul>
+        <li>сильный и длительный стресс</li>
+        <li>недосып и переутомление</li>
+        <li>много кофеина и энергетиков</li>
+        <li>тревожные мысли «а вдруг что-то случится»</li>
+        <li>наследственность и особенности нервной системы</li>
+        <li>резкая смена обстановки, экзамены, конфликты</li>
+      </ul>
+    </div>
+    <div class="card reveal delay-2">
+      <div class="ico ico-peach">⚠️</div>
+      <h3>Симптомы во время приступа</h3>
+      <ul>
+        <li>сильное сердцебиение</li>
+        <li>нехватка воздуха, «ком» в горле</li>
+        <li>дрожь, потливость, головокружение</li>
+        <li>ощущение нереальности происходящего</li>
+        <li>страх сойти с ума или потерять контроль</li>
+      </ul>
+    </div>
+    <div class="card reveal delay-1">
+      <div class="ico ico-mint">🌬️</div>
+      <h3>Что делать прямо сейчас</h3>
+      <ul>
+        <li><b>Дыхание 4–7–8:</b> вдох на 4, задержка на 7, выдох на 8</li>
+        <li><b>Заземление 5–4–3–2–1:</b> найди 5 предметов глазами, 4 — на ощупь, 3 — на слух, 2 — на запах, 1 — на вкус</li>
+        <li>Напряги и расслабь мышцы по очереди</li>
+        <li>Скажи себе: «Это пройдёт. Это не опасно»</li>
+        <li>Умойся холодной водой</li>
+      </ul>
+    </div>
+    <div class="card reveal delay-2">
+      <div class="ico ico-blue">🛡️</div>
+      <h3>Как снизить частоту атак</h3>
+      <ul>
+        <li>сон 7–9 часов, всегда в одно время</li>
+        <li>меньше кофеина, особенно после 15:00</li>
+        <li>движение: прогулка 30 минут в день</li>
+        <li>дневник настроения — записывай триггеры</li>
+        <li>ограничь новости и соцсети перед сном</li>
+        <li>не избегай мест из-за страха — это закрепляет тревогу</li>
+      </ul>
+    </div>
+    <div class="card reveal delay-3">
+      <div class="ico ico-lav">💬</div>
+      <h3>Когда идти к специалисту</h3>
+      <p>Если атаки повторяются, мешают учиться, выходить из дома или спать —
+         это повод обратиться к психологу или психотерапевту.
+         Это не стыдно, это забота о себе. Помощь действительно работает.</p>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="test">
+  <div class="section-head reveal">
+    <h2>Мини-тест самонаблюдения</h2>
+    <p>Несколько вопросов, которые помогут тебе честно посмотреть на своё состояние.</p>
+  </div>
+
+  <div class="test-box reveal">
+    <div class="warning">
+      <b>⚠️ Важно!</b> Этот тест <b>не является медицинским диагнозом</b> и не может
+      дать полный или верный ответ о наличии у тебя психологического расстройства
+      или депрессивного состояния. Он создан только для самонаблюдения.
+      Единственный, кто может поставить диагноз — врач или клинический психолог.
+      Если тебе тяжело — пожалуйста, обратись к взрослому, которому доверяешь,
+      или к специалисту.
+    </div>
+
+    <div id="questions"></div>
+
+    <button class="btn btn-primary" id="testBtn" style="margin-top:10px">Показать результат</button>
+
+    <div class="result" id="testResult">
+      <h3 id="resTitle"></h3>
+      <div class="score" id="resScore"></div>
+      <p id="resText"></p>
+    </div>
+  </div>
+</section>
+
+<section class="section games-section" id="games">
+  <div class="section-head reveal">
+    <h2>Игры для отвлечения</h2>
+    <p>Когда тревога накрывает, простые задачи помогают вернуть мозг в «здесь и сейчас».
+       Выбери любую — обе не про скорость, а про спокойное сосредоточение.</p>
+  </div>
+
+  <div class="grid grid-2">
+    <div class="game-card reveal">
+      <h3>❌⭕ Крестики-нолики</h3>
+      <p class="hint">Классика. Играй против компьютера и переключай внимание с тревожных мыслей на логику.</p>
+      <div class="game-status" id="tttStatus">Твой ход (❌)</div>
+      <div class="ttt" id="tttBoard"></div>
+      <div class="game-foot">
+        <button class="btn-sm" onclick="resetTTT()">Заново</button>
+      </div>
+    </div>
+
+    <div class="game-card reveal delay-1">
+      <h3>🧪 Сортировка колбочек</h3>
+      <p class="hint">
+        Нажимай на колбочку, чтобы взять верхний цвет, затем на другую — чтобы перелить.
+        Переливать можно в любую колбочку, где есть свободное место — неважно, какого цвета там верхний слой.
+        Цель — собрать в каждой колбочке один цвет.
+      </p>
+      <div class="tubes" id="tubes"></div>
+      <div class="game-status" id="tubeStatus">Ходов: 0</div>
+      <div class="game-foot">
+        <button class="btn-sm" onclick="resetTubes()">Перемешать заново</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section pet-section" id="pet">
+  <div class="section-head reveal">
+    <h2>Твой питомец</h2>
+    <p>Маленький друг, который ждёт тебя. Заботься о нём — это тоже способ
+       позаботиться о себе.</p>
+  </div>
+
+  <div class="pet-wrap reveal">
+    <div class="pet-stage">
+      <div class="pet-shadow"></div>
+      <div class="pet-svg-wrap" id="petSvgWrap" onclick="petPet()"></div>
+      <div class="pet-name" id="petName">Мурзик</div>
+    </div>
+
+    <div class="pet-panel">
+      <div>
+        <div class="wardrobe-title">Выбери питомца</div>
+        <div class="pet-types" id="petTypes"></div>
+      </div>
+
+      <div class="stat-row">
+        <span class="lbl">🍖 Сытость</span>
+        <div class="bar food"><i id="barFood" style="width:70%"></i></div>
+      </div>
+      <div class="stat-row">
+        <span class="lbl">😊 Настроение</span>
+        <div class="bar mood"><i id="barMood" style="width:70%"></i></div>
+      </div>
+      <div class="stat-row">
+        <span class="lbl">⚡ Энергия</span>
+        <div class="bar energy"><i id="barEnergy" style="width:70%"></i></div>
+      </div>
+
+      <div class="pet-actions">
+        <button onclick="feedPet()">🍖 Покормить</button>
+        <button onclick="playWithPet()">🎾 Поиграть</button>
+        <button onclick="sleepPet()">😴 Уложить спать</button>
+        <button onclick="renamePet()">✏️ Имя</button>
+      </div>
+
+      <div>
+        <div class="wardrobe-title">Гардероб</div>
+        <div class="wardrobe" id="wardrobe"></div>
+      </div>
+
+      <p style="font-size:.85rem;color:var(--muted)" id="petMsg">Питомец рад тебя видеть 💜</p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="foot-inner">
+    <div class="crisis">
+      <b>Если тебе прямо сейчас очень тяжело и есть мысли о том, чтобы навредить себе —</b>
+      пожалуйста, не оставайся один. Позвони на бесплатный телефон доверия:
+      <b>8-800-2000-122</b> (для детей и подростков, круглосуточно),
+      <b>8-495-989-50-50</b> (круглосуточная психологическая помощь).
+      Или расскажи взрослому, которому доверяешь.
+    </div>
+    <div>
+      <h4>О проекте</h4>
+      <p>Школьный проект, созданный, чтобы напомнить: психологическое здоровье важно,
+         а просить о помощи — нормально.</p>
+    </div>
+    <div>
+      <h4>Важно</h4>
+      <p>Материалы сайта носят информационный характер и не заменяют консультацию
+         врача или психолога. Диагноз может поставить только специалист.</p>
+    </div>
+  </div>
+  <div class="copyright">© 2025 «Спокойствие» · Сделано с заботой 🫧</div>
+</footer>
+
+<script>
+'use strict';
+/* ================= ТЕМА ================= */
+(function initTheme(){
+  const saved = localStorage.getItem('spokoystvie_theme');
+  let theme = saved;
+  if(!theme){
+    theme = (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light';
+  }
+  document.documentElement.setAttribute('data-theme', theme);
+})();
+
+document.getElementById('themeSwitch').addEventListener('click', ()=>{
+  const current = document.documentElement.getAttribute('data-theme') || 'light';
+  const next = current === 'light' ? 'dark' : 'light';
+  document.documentElement.setAttribute('data-theme', next);
+  localStorage.setItem('spokoystvie_theme', next);
+});
+
+if(window.matchMedia){
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e=>{
+    if(!localStorage.getItem('spokoystvie_theme')){
+      document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+    }
+  });
+}
+
+/* ================= SVG DEFS ================= */
+const SVG_DEFS = `
+  <defs>
+    <linearGradient id="catBody" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffc999"/><stop offset=".5" stop-color="#ffb07a"/><stop offset="1" stop-color="#ff9752"/>
+    </linearGradient>
+    <linearGradient id="catEarInner" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffd5e0"/><stop offset="1" stop-color="#ffb1c1"/>
+    </linearGradient>
+    <linearGradient id="catTail" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ffb07a"/><stop offset="1" stop-color="#e67c3d"/>
+    </linearGradient>
+    <radialGradient id="catBelly" cx=".5" cy=".4" r=".6">
+      <stop offset="0" stop-color="#fff3e0"/><stop offset="1" stop-color="#ffd9b5"/>
+    </radialGradient>
+    <linearGradient id="dinoBody" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#a8f0c8"/><stop offset=".5" stop-color="#7ce0a6"/><stop offset="1" stop-color="#4ecb90"/>
+    </linearGradient>
+    <radialGradient id="dinoBelly" cx=".5" cy=".35" r=".7">
+      <stop offset="0" stop-color="#f0fbf5"/><stop offset="1" stop-color="#c8eedd"/>
+    </radialGradient>
+    <linearGradient id="dinoSpike" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#5ecb92"/><stop offset="1" stop-color="#2fa068"/>
+    </linearGradient>
+    <linearGradient id="dinoTail" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#7ce0a6"/><stop offset="1" stop-color="#3fb87e"/>
+    </linearGradient>
+    <linearGradient id="penBody" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#4d5b85"/><stop offset=".5" stop-color="#33405f"/><stop offset="1" stop-color="#1f2a4a"/>
+    </linearGradient>
+    <radialGradient id="penBelly" cx=".5" cy=".35" r=".65">
+      <stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#e8eeff"/>
+    </radialGradient>
+    <linearGradient id="penBeak" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffcc66"/><stop offset="1" stop-color="#f0a028"/>
+    </linearGradient>
+    <linearGradient id="penFoot" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffc35c"/><stop offset="1" stop-color="#e08a1e"/>
+    </linearGradient>
+    <linearGradient id="frogBody" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#aef0b8"/><stop offset=".5" stop-color="#7ce08c"/><stop offset="1" stop-color="#4ecb6e"/>
+    </linearGradient>
+    <radialGradient id="frogBelly" cx=".5" cy=".4" r=".65">
+      <stop offset="0" stop-color="#f5fff0"/><stop offset="1" stop-color="#d8f5d8"/>
+    </radialGradient>
+    <radialGradient id="frogEyeBg" cx=".5" cy=".5" r=".5">
+      <stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="#e0f5e8"/>
+    </radialGradient>
+    <linearGradient id="foxBody" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffb877"/><stop offset=".5" stop-color="#ff9548"/><stop offset="1" stop-color="#e8692a"/>
+    </linearGradient>
+    <linearGradient id="foxCream" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fff8ec"/><stop offset="1" stop-color="#ffe9d0"/>
+    </linearGradient>
+    <linearGradient id="foxTailGrad" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#ff9548"/><stop offset="1" stop-color="#d5581f"/>
+    </linearGradient>
+    <linearGradient id="foxEarInner" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#3d4570"/><stop offset="1" stop-color="#1f2a4a"/>
+    </linearGradient>
+    <linearGradient id="pandaBody" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#e0e7f5"/>
+    </linearGradient>
+    <linearGradient id="pandaBlack" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#3d4570"/><stop offset="1" stop-color="#1f2a4a"/>
+    </linearGradient>
+    <radialGradient id="pandaBelly" cx=".5" cy=".4" r=".65">
+      <stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#f0f4ff"/>
+    </radialGradient>
+    <linearGradient id="pandaEar" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#2b3550"/><stop offset="1" stop-color="#151c38"/>
+    </linearGradient>
+    <linearGradient id="hatBody" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#4a5578"/><stop offset="1" stop-color="#1f2a4a"/>
+    </linearGradient>
+    <linearGradient id="crownGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffe08a"/><stop offset="1" stop-color="#f0a028"/>
+    </linearGradient>
+    <linearGradient id="capGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#8aa3ff"/><stop offset="1" stop-color="#4a6be0"/>
+    </linearGradient>
+    <linearGradient id="bowGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ff9bb0"/><stop offset="1" stop-color="#ff5e7a"/>
+    </linearGradient>
+    <linearGradient id="glassLens" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#2b3550" stop-opacity=".9"/><stop offset="1" stop-color="#2b3550" stop-opacity=".7"/>
+    </linearGradient>
+    <linearGradient id="hpGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#8aa3ff"/><stop offset="1" stop-color="#4a6be0"/>
+    </linearGradient>
+    <linearGradient id="hpCup" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#6c8cff"/><stop offset="1" stop-color="#4a6be0"/>
+    </linearGradient>
+    <radialGradient id="softShadow" cx=".5" cy=".5" r=".5">
+      <stop offset="0" stop-color="rgba(0,0,0,.15)"/><stop offset="1" stop-color="rgba(0,0,0,0)"/>
+    </radialGradient>
+    <linearGradient id="bodyShine" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fff" stop-opacity=".4"/><stop offset="1" stop-color="#fff" stop-opacity="0"/>
+    </linearGradient>
+  </defs>`;
+
+(function mountDefs(){
+  const holder = document.createElement('div');
+  holder.setAttribute('aria-hidden','true');
+  holder.style.cssText = 'position:absolute;width:0;height:0;overflow:hidden';
+  holder.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1 1">${SVG_DEFS}</svg>`;
+  document.body.appendChild(holder);
+})();
+
+/* ================================================================
+   АКСЕССУАРЫ
+   ================================================================ */
+function drawAccessory(kind){
+  if(!kind) return '';
+  switch(kind){
+    case 'hat': return `
+      <g transform="translate(100, 18)">
+        <ellipse cx="0" cy="20" rx="46" ry="7" fill="#1a2238" opacity=".9"/>
+        <rect x="-28" y="-22" width="56" height="42" rx="8" fill="url(#hatBody)"/>
+        <rect x="-28" y="4" width="56" height="10" fill="#ff9b78"/>
+        <rect x="-28" y="6" width="56" height="3" fill="#6c8cff" opacity=".5"/>
+        <rect x="-28" y="12" width="56" height="6" fill="#ff9b78"/>
+        <ellipse cx="0" cy="-22" rx="28" ry="5" fill="#3d4570"/>
+      </g>`;
+    case 'crown': return `
+      <g transform="translate(100, 8)">
+        <path d="M -34 18 L -34 -8 L -20 4 L -10 -16 L 0 2 L 10 -16 L 20 4 L 34 -8 L 34 18 Z"
+              fill="url(#crownGrad)" stroke="#c9942d" stroke-width="2" stroke-linejoin="round"/>
+        <rect x="-34" y="14" width="68" height="6" rx="2" fill="#c9942d"/>
+        <circle cx="-10" cy="-16" r="4" fill="#ff5e7a" stroke="#c9942d" stroke-width="1.5"/>
+        <circle cx="10" cy="-16" r="4" fill="#6c8cff" stroke="#c9942d" stroke-width="1.5"/>
+        <circle cx="0" cy="-4" r="4" fill="#9ee6c8" stroke="#c9942d" stroke-width="1.5"/>
+      </g>`;
+    case 'cap': return `
+      <g transform="translate(100, 14)">
+        <path d="M -36 20 Q -36 -18 0 -18 Q 36 -18 36 20 Z" fill="url(#capGrad)"/>
+        <rect x="-36" y="18" width="72" height="8" rx="4" fill="#4a6be0"/>
+        <path d="M -46 20 Q -60 24 -58 30 Q -46 28 -36 26 Z" fill="#4a6be0"/>
+        <circle cx="0" cy="-16" r="4" fill="#ffd166"/>
+      </g>`;
+    case 'bow': return `
+      <g transform="translate(100, 18)">
+        <path d="M -26 0 Q -26 -18 -10 -12 Q 0 -4 0 8 Q 0 -4 10 -12 Q 26 -18 26 0 Q 26 14 10 8 Q 0 0 0 -12 Q 0 0 -10 8 Q -26 14 -26 0 Z"
+              fill="url(#bowGrad)"/>
+        <circle cx="0" cy="0" r="7" fill="#ffb6c1"/>
+      </g>`;
+    case 'glasses': return `
+      <g transform="translate(100, 76)">
+        <ellipse cx="-19" cy="0" rx="18" ry="14" fill="url(#glassLens)" stroke="#2b3550" stroke-width="3"/>
+        <ellipse cx="19" cy="0" rx="18" ry="14" fill="url(#glassLens)" stroke="#2b3550" stroke-width="3"/>
+        <line x1="-1" y1="0" x2="1" y2="0" stroke="#2b3550" stroke-width="3"/>
+        <path d="M -37 0 Q -48 -4 -50 -8" stroke="#2b3550" stroke-width="3" fill="none" stroke-linecap="round"/>
+        <path d="M 37 0 Q 48 -4 50 -8" stroke="#2b3550" stroke-width="3" fill="none" stroke-linecap="round"/>
+        <ellipse cx="-22" cy="-5" rx="7" ry="4" fill="#fff" opacity=".75"/>
+        <ellipse cx="16" cy="-5" rx="7" ry="4" fill="#fff" opacity=".75"/>
+      </g>`;
+    case 'headphones': return `
+      <g transform="translate(100, 46)">
+        <path d="M -50 18 Q -50 -40 0 -40 Q 50 -40 50 18" fill="none" stroke="url(#hpGrad)" stroke-width="9" stroke-linecap="round"/>
+        <path d="M -50 18 Q -50 -40 0 -40 Q 50 -40 50 18" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" opacity=".35"/>
+        <rect x="-62" y="6" width="24" height="34" rx="11" fill="url(#hpCup)" stroke="#3d4570" stroke-width="2.5"/>
+        <rect x="38" y="6" width="24" height="34" rx="11" fill="url(#hpCup)" stroke="#3d4570" stroke-width="2.5"/>
+        <rect x="-58" y="14" width="16" height="18" rx="6" fill="#b8a7e8"/>
+        <rect x="42" y="14" width="16" height="18" rx="6" fill="#b8a7e8"/>
+      </g>`;
+  }
+  return '';
+}
+
+/* ================================================================
+   ПИТОМЦЫ (внутренняя разметка без <svg>-обёртки)
+   ================================================================ */
+function drawCat(){
+  return `
+    <ellipse cx="100" cy="230" rx="72" ry="9" fill="url(#softShadow)"/>
+    <g class="tail-wag" style="transform-origin:155px 170px">
+      <path d="M155 170 Q 200 158 192 108 Q 190 98 180 100 Q 176 96 172 100"
+            fill="none" stroke="url(#catTail)" stroke-width="16" stroke-linecap="round"/>
+      <path d="M180 100 Q 176 96 172 100" fill="none" stroke="#fff3e0" stroke-width="8" stroke-linecap="round"/>
+    </g>
+    <ellipse cx="100" cy="165" rx="58" ry="55" fill="url(#catBody)"/>
+    <ellipse cx="100" cy="178" rx="36" ry="42" fill="url(#catBelly)"/>
+    <ellipse cx="82" cy="150" rx="18" ry="12" fill="url(#bodyShine)"/>
+    <ellipse cx="72" cy="210" rx="20" ry="14" fill="url(#catBody)"/>
+    <ellipse cx="128" cy="210" rx="20" ry="14" fill="url(#catBody)"/>
+    <ellipse cx="72" cy="210" rx="13" ry="8" fill="#fff3e0"/>
+    <ellipse cx="128" cy="210" rx="13" ry="8" fill="#fff3e0"/>
+    <ellipse cx="66" cy="208" rx="2.5" ry="1.5" fill="#ffb1c1"/>
+    <ellipse cx="72" cy="206" rx="2.5" ry="1.5" fill="#ffb1c1"/>
+    <ellipse cx="78" cy="208" rx="2.5" ry="1.5" fill="#ffb1c1"/>
+    <ellipse cx="122" cy="208" rx="2.5" ry="1.5" fill="#ffb1c1"/>
+    <ellipse cx="128" cy="206" rx="2.5" ry="1.5" fill="#ffb1c1"/>
+    <ellipse cx="134" cy="208" rx="2.5" ry="1.5" fill="#ffb1c1"/>
+    <ellipse cx="100" cy="100" rx="64" ry="58" fill="url(#catBody)"/>
+    <g class="ear-wiggle" style="transform-origin:70px 65px">
+      <path d="M 52 68 Q 44 12 92 46 Z" fill="url(#catBody)" stroke="#e67c3d" stroke-width="1"/>
+      <path d="M 60 62 Q 56 28 84 48 Z" fill="url(#catEarInner)"/>
+    </g>
+    <g class="ear-wiggle-r" style="transform-origin:130px 65px">
+      <path d="M 148 68 Q 156 12 108 46 Z" fill="url(#catBody)" stroke="#e67c3d" stroke-width="1"/>
+      <path d="M 140 62 Q 144 28 116 48 Z" fill="url(#catEarInner)"/>
+    </g>
+    <ellipse cx="62" cy="118" rx="17" ry="11" fill="#ff8fa6" opacity=".55"/>
+    <ellipse cx="138" cy="118" rx="17" ry="11" fill="#ff8fa6" opacity=".55"/>
+    <ellipse cx="57" cy="115" rx="5" ry="3" fill="#fff" opacity=".6"/>
+    <ellipse cx="133" cy="115" rx="5" ry="3" fill="#fff" opacity=".6"/>
+    <ellipse cx="100" cy="116" rx="6" ry="5" fill="#ff5e7a"/>
+    <ellipse cx="98" cy="114" rx="2" ry="1.5" fill="#fff" opacity=".7"/>
+    <path d="M 100 122 Q 92 132 84 126" fill="none" stroke="#7a3f28" stroke-width="2.2" stroke-linecap="round"/>
+    <path d="M 100 122 Q 108 132 116 126" fill="none" stroke="#7a3f28" stroke-width="2.2" stroke-linecap="round"/>
+    <g stroke="#7a3f28" stroke-width="1.3" stroke-linecap="round" opacity=".45">
+      <line x1="58" y1="112" x2="28" y2="106"/>
+      <line x1="58" y1="118" x2="26" y2="118"/>
+      <line x1="58" y1="124" x2="28" y2="130"/>
+      <line x1="142" y1="112" x2="172" y2="106"/>
+      <line x1="142" y1="118" x2="174" y2="118"/>
+      <line x1="142" y1="124" x2="172" y2="130"/>
+    </g>
+    <g class="blink" style="transform-origin:100px 100px">
+      <ellipse cx="78" cy="100" rx="11" ry="13" fill="#2b3550"/>
+      <ellipse cx="122" cy="100" rx="11" ry="13" fill="#2b3550"/>
+      <circle cx="82" cy="95" r="4" fill="#fff"/>
+      <circle cx="126" cy="95" r="4" fill="#fff"/>
+      <circle cx="75" cy="104" r="2" fill="#fff" opacity=".8"/>
+      <circle cx="119" cy="104" r="2" fill="#fff" opacity=".8"/>
+      <circle cx="80" cy="93" r="1.5" fill="#a9c2ff"/>
+      <circle cx="124" cy="93" r="1.5" fill="#a9c2ff"/>
+    </g>`;
+}
+
+function drawDino(){
+  return `
+    <ellipse cx="100" cy="230" rx="72" ry="9" fill="url(#softShadow)"/>
+    <g class="tail-wag" style="transform-origin:150px 175px">
+      <path d="M155 175 Q 200 168 195 118" fill="none" stroke="url(#dinoTail)" stroke-width="18" stroke-linecap="round"/>
+      <path d="M180 145 L 188 138 L 190 148 Z" fill="url(#dinoSpike)"/>
+      <path d="M190 128 L 200 122 L 200 132 Z" fill="url(#dinoSpike)"/>
+    </g>
+    <ellipse cx="100" cy="165" rx="60" ry="58" fill="url(#dinoBody)"/>
+    <ellipse cx="100" cy="178" rx="40" ry="44" fill="url(#dinoBelly)"/>
+    <path d="M 48 140 L 38 118 L 55 126 Z" fill="url(#dinoSpike)"/>
+    <path d="M 62 118 L 54 92 L 72 106 Z" fill="url(#dinoSpike)"/>
+    <path d="M 82 106 L 78 78 L 94 96 Z" fill="url(#dinoSpike)"/>
+    <path d="M 108 106 L 112 80 L 126 96 Z" fill="url(#dinoSpike)"/>
+    <ellipse cx="80" cy="148" rx="18" ry="14" fill="url(#bodyShine)"/>
+    <path d="M 62 214 Q 62 200 78 200 Q 88 200 88 214 Z" fill="url(#dinoBody)"/>
+    <path d="M 112 214 Q 112 200 122 200 Q 138 200 138 214 Z" fill="url(#dinoBody)"/>
+    <ellipse cx="76" cy="216" rx="14" ry="4" fill="#2fa068" opacity=".3"/>
+    <ellipse cx="124" cy="216" rx="14" ry="4" fill="#2fa068" opacity=".3"/>
+    <path d="M 66 214 L 64 220 M 74 214 L 74 220 M 82 214 L 84 220" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
+    <path d="M 116 214 L 114 220 M 124 214 L 124 220 M 132 214 L 134 220" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
+    <ellipse cx="100" cy="98" rx="60" ry="54" fill="url(#dinoBody)"/>
+    <ellipse cx="100" cy="116" rx="40" ry="30" fill="url(#dinoBelly)"/>
+    <ellipse cx="62" cy="112" rx="14" ry="9" fill="#ff8fa6" opacity=".55"/>
+    <ellipse cx="138" cy="112" rx="14" ry="9" fill="#ff8fa6" opacity=".55"/>
+    <ellipse cx="57" cy="109" rx="4" ry="2.5" fill="#fff" opacity=".6"/>
+    <ellipse cx="133" cy="109" rx="4" ry="2.5" fill="#fff" opacity=".6"/>
+    <ellipse cx="93" cy="108" rx="2.5" ry="3" fill="#1f4a36"/>
+    <ellipse cx="107" cy="108" rx="2.5" ry="3" fill="#1f4a36"/>
+    <path d="M 86 120 Q 100 130 114 120" fill="none" stroke="#1f4a36" stroke-width="2.5" stroke-linecap="round"/>
+    <path d="M 90 122 L 93 130 L 96 122 Z" fill="#fff" stroke="#c8eedd" stroke-width=".5"/>
+    <path d="M 104 122 L 107 130 L 110 122 Z" fill="#fff" stroke="#c8eedd" stroke-width=".5"/>
+    <path d="M 96 126 Q 100 134 104 126" fill="#ff8fa6"/>
+    <g class="blink" style="transform-origin:100px 92px">
+      <ellipse cx="78" cy="92" rx="11" ry="14" fill="#1f4a36"/>
+      <ellipse cx="122" cy="92" rx="11" ry="14" fill="#1f4a36"/>
+      <circle cx="82" cy="87" r="4" fill="#fff"/>
+      <circle cx="126" cy="87" r="4" fill="#fff"/>
+      <circle cx="75" cy="96" r="2" fill="#fff" opacity=".8"/>
+      <circle cx="119" cy="96" r="2" fill="#fff" opacity=".8"/>
+    </g>`;
+}
+
+function drawPenguin(){
+  return `
+    <ellipse cx="100" cy="230" rx="66" ry="9" fill="url(#softShadow)"/>
+    <ellipse cx="100" cy="155" rx="58" ry="66" fill="url(#penBody)"/>
+    <ellipse cx="100" cy="165" rx="42" ry="54" fill="url(#penBelly)"/>
+    <ellipse cx="88" cy="140" rx="14" ry="12" fill="#fff" opacity=".5"/>
+    <g class="tail-wag" style="transform-origin:48px 140px">
+      <ellipse cx="48" cy="158" rx="15" ry="42" fill="url(#penBody)" transform="rotate(-12 48 158)"/>
+      <ellipse cx="48" cy="170" rx="5" ry="18" fill="#1a2340" opacity=".3" transform="rotate(-12 48 170)"/>
+    </g>
+    <g class="tail-wag" style="transform-origin:152px 140px">
+      <ellipse cx="152" cy="158" rx="15" ry="42" fill="url(#penBody)" transform="rotate(12 152 158)"/>
+      <ellipse cx="152" cy="170" rx="5" ry="18" fill="#1a2340" opacity=".3" transform="rotate(12 152 170)"/>
+    </g>
+    <ellipse cx="80" cy="218" rx="18" ry="9" fill="url(#penFoot)"/>
+    <ellipse cx="120" cy="218" rx="18" ry="9" fill="url(#penFoot)"/>
+    <path d="M 66 218 L 62 224 M 74 220 L 72 226 M 82 220 L 84 226" stroke="#8a5212" stroke-width="1.5" stroke-linecap="round"/>
+    <path d="M 118 218 L 116 224 M 126 220 L 128 226 M 134 218 L 138 224" stroke="#8a5212" stroke-width="1.5" stroke-linecap="round"/>
+    <ellipse cx="100" cy="90" rx="54" ry="50" fill="url(#penBody)"/>
+    <path d="M 58 94 Q 100 58 142 94 Q 142 128 100 136 Q 58 128 58 94 Z" fill="url(#penBelly)"/>
+    <path d="M 100 40 Q 96 20 108 14 Q 112 26 106 42 Z" fill="url(#penBody)"/>
+    <path d="M 104 32 Q 108 22 116 20 Q 114 30 108 38 Z" fill="url(#penBody)"/>
+    <ellipse cx="70" cy="108" rx="12" ry="8" fill="#ff8fa6" opacity=".6"/>
+    <ellipse cx="130" cy="108" rx="12" ry="8" fill="#ff8fa6" opacity=".6"/>
+    <ellipse cx="66" cy="105" rx="3.5" ry="2" fill="#fff" opacity=".6"/>
+    <ellipse cx="126" cy="105" rx="3.5" ry="2" fill="#fff" opacity=".6"/>
+    <path d="M 88 102 L 112 102 L 100 118 Z" fill="url(#penBeak)"/>
+    <path d="M 88 102 L 112 102" stroke="#c87a1a" stroke-width="1.5"/>
+    <ellipse cx="96" cy="104" rx="3" ry="1.5" fill="#fff" opacity=".6"/>
+    <g class="blink" style="transform-origin:100px 92px">
+      <ellipse cx="82" cy="92" rx="9" ry="11" fill="#1f2a4a"/>
+      <ellipse cx="118" cy="92" rx="9" ry="11" fill="#1f2a4a"/>
+      <circle cx="85" cy="88" r="3.2" fill="#fff"/>
+      <circle cx="121" cy="88" r="3.2" fill="#fff"/>
+      <circle cx="79" cy="96" r="1.5" fill="#fff" opacity=".8"/>
+      <circle cx="115" cy="96" r="1.5" fill="#fff" opacity=".8"/>
+    </g>`;
+}
+
+function drawFrog(){
+  return `
+    <ellipse cx="100" cy="230" rx="76" ry="9" fill="url(#softShadow)"/>
+    <ellipse cx="100" cy="165" rx="66" ry="58" fill="url(#frogBody)"/>
+    <ellipse cx="100" cy="178" rx="42" ry="44" fill="url(#frogBelly)"/>
+    <ellipse cx="82" cy="150" rx="18" ry="12" fill="url(#bodyShine)"/>
+    <ellipse cx="55" cy="216" rx="24" ry="12" fill="url(#frogBody)"/>
+    <ellipse cx="145" cy="216" rx="24" ry="12" fill="url(#frogBody)"/>
+    <circle cx="44" cy="218" r="4.5" fill="#3fb85a"/>
+    <circle cx="55" cy="221" r="4.5" fill="#3fb85a"/>
+    <circle cx="66" cy="218" r="4.5" fill="#3fb85a"/>
+    <circle cx="134" cy="218" r="4.5" fill="#3fb85a"/>
+    <circle cx="145" cy="221" r="4.5" fill="#3fb85a"/>
+    <circle cx="156" cy="218" r="4.5" fill="#3fb85a"/>
+    <ellipse cx="100" cy="100" rx="62" ry="52" fill="url(#frogBody)"/>
+    <ellipse cx="62" cy="118" rx="14" ry="10" fill="#ff8fa6" opacity=".55"/>
+    <ellipse cx="138" cy="118" rx="14" ry="10" fill="#ff8fa6" opacity=".55"/>
+    <ellipse cx="57" cy="115" rx="4" ry="2.5" fill="#fff" opacity=".7"/>
+    <ellipse cx="133" cy="115" rx="4" ry="2.5" fill="#fff" opacity=".7"/>
+    <path d="M 62 118 Q 100 148 138 118" fill="none" stroke="#1f3a24" stroke-width="3" stroke-linecap="round"/>
+    <path d="M 62 118 Q 100 148 138 118" fill="none" stroke="#3fb85a" stroke-width="1" stroke-linecap="round" opacity=".5"/>
+    <circle cx="92" cy="98" r="2.5" fill="#1f3a24"/>
+    <circle cx="108" cy="98" r="2.5" fill="#1f3a24"/>
+    <circle cx="92" cy="97" r="1" fill="#fff" opacity=".7"/>
+    <circle cx="108" cy="97" r="1" fill="#fff" opacity=".7"/>
+    <circle cx="70" cy="62" r="23" fill="url(#frogBody)"/>
+    <circle cx="130" cy="62" r="23" fill="url(#frogBody)"/>
+    <circle cx="70" cy="62" r="18" fill="url(#frogEyeBg)"/>
+    <circle cx="130" cy="62" r="18" fill="url(#frogEyeBg)"/>
+    <g class="blink" style="transform-origin:100px 62px">
+      <circle cx="73" cy="64" r="10" fill="#1f3a24"/>
+      <circle cx="133" cy="64" r="10" fill="#1f3a24"/>
+      <circle cx="77" cy="60" r="3.5" fill="#fff"/>
+      <circle cx="137" cy="60" r="3.5" fill="#fff"/>
+      <circle cx="70" cy="68" r="1.8" fill="#fff" opacity=".9"/>
+      <circle cx="130" cy="68" r="1.8" fill="#fff" opacity=".9"/>
+    </g>`;
+}
+
+function drawFox(){
+  return `
+    <ellipse cx="100" cy="230" rx="72" ry="9" fill="url(#softShadow)"/>
+    <g class="tail-wag" style="transform-origin:150px 172px">
+      <path d="M155 172 Q 205 158 198 105 Q 196 92 186 94"
+            fill="none" stroke="url(#foxTailGrad)" stroke-width="22" stroke-linecap="round"/>
+      <path d="M196 118 Q 205 108 198 105 Q 190 96 186 94"
+            fill="none" stroke="url(#foxCream)" stroke-width="22" stroke-linecap="round"/>
+      <path d="M188 100 Q 184 96 186 94" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" opacity=".6"/>
+    </g>
+    <ellipse cx="100" cy="165" rx="58" ry="55" fill="url(#foxBody)"/>
+    <ellipse cx="100" cy="176" rx="34" ry="40" fill="url(#foxCream)"/>
+    <ellipse cx="82" cy="150" rx="14" ry="10" fill="url(#bodyShine)"/>
+    <ellipse cx="72" cy="212" rx="18" ry="12" fill="#2b3550"/>
+    <ellipse cx="128" cy="212" rx="18" ry="12" fill="#2b3550"/>
+    <ellipse cx="72" cy="212" rx="12" ry="7" fill="#3d4570"/>
+    <ellipse cx="128" cy="212" rx="12" ry="7" fill="#3d4570"/>
+    <ellipse cx="100" cy="98" rx="60" ry="54" fill="url(#foxBody)"/>
+    <g class="ear-wiggle" style="transform-origin:72px 66px">
+      <path d="M 48 68 Q 36 8 96 46 Z" fill="url(#foxBody)" stroke="#d5581f" stroke-width="1.5"/>
+      <path d="M 58 62 Q 52 20 88 50 Z" fill="url(#foxEarInner)"/>
+    </g>
+    <g class="ear-wiggle-r" style="transform-origin:128px 66px">
+      <path d="M 152 68 Q 164 8 104 46 Z" fill="url(#foxBody)" stroke="#d5581f" stroke-width="1.5"/>
+      <path d="M 142 62 Q 148 20 112 50 Z" fill="url(#foxEarInner)"/>
+    </g>
+    <path d="M 100 72 Q 138 92 134 118 Q 118 138 100 138 Q 82 138 66 118 Q 62 92 100 72 Z" fill="url(#foxCream)"/>
+    <ellipse cx="66" cy="114" rx="12" ry="8" fill="#ff8fa6" opacity=".55"/>
+    <ellipse cx="134" cy="114" rx="12" ry="8" fill="#ff8fa6" opacity=".55"/>
+    <ellipse cx="62" cy="111" rx="3.5" ry="2" fill="#fff" opacity=".7"/>
+    <ellipse cx="130" cy="111" rx="3.5" ry="2" fill="#fff" opacity=".7"/>
+    <ellipse cx="100" cy="116" rx="7" ry="5.5" fill="#2b3550"/>
+    <ellipse cx="98" cy="114" rx="2.5" ry="1.5" fill="#fff" opacity=".6"/>
+    <path d="M 100 121 Q 94 130 88 124" fill="none" stroke="#2b3550" stroke-width="2.2" stroke-linecap="round"/>
+    <path d="M 100 121 Q 106 130 112 124" fill="none" stroke="#2b3550" stroke-width="2.2" stroke-linecap="round"/>
+    <g class="blink" style="transform-origin:100px 94px">
+      <ellipse cx="80" cy="94" rx="10" ry="12" fill="#2b3550"/>
+      <ellipse cx="120" cy="94" rx="10" ry="12" fill="#2b3550"/>
+      <circle cx="83" cy="90" r="3.5" fill="#fff"/>
+      <circle cx="123" cy="90" r="3.5" fill="#fff"/>
+      <circle cx="77" cy="98" r="1.8" fill="#fff" opacity=".8"/>
+      <circle cx="117" cy="98" r="1.8" fill="#fff" opacity=".8"/>
+    </g>`;
+}
+
+function drawPanda(){
+  return `
+    <ellipse cx="100" cy="230" rx="74" ry="9" fill="url(#softShadow)"/>
+    <ellipse cx="100" cy="165" rx="60" ry="58" fill="url(#pandaBody)"/>
+    <ellipse cx="100" cy="176" rx="38" ry="42" fill="url(#pandaBelly)"/>
+    <ellipse cx="80" cy="148" rx="14" ry="10" fill="#fff" opacity=".55"/>
+    <ellipse cx="46" cy="146" rx="20" ry="28" fill="url(#pandaBlack)" transform="rotate(-18 46 146)"/>
+    <ellipse cx="154" cy="146" rx="20" ry="28" fill="url(#pandaBlack)" transform="rotate(18 154 146)"/>
+    <ellipse cx="42" cy="150" rx="7" ry="9" fill="#fff" opacity=".08" transform="rotate(-18 42 150)"/>
+    <ellipse cx="158" cy="150" rx="7" ry="9" fill="#fff" opacity=".08" transform="rotate(18 158 150)"/>
+    <ellipse cx="70" cy="216" rx="22" ry="12" fill="url(#pandaBlack)"/>
+    <ellipse cx="130" cy="216" rx="22" ry="12" fill="url(#pandaBlack)"/>
+    <ellipse cx="70" cy="216" rx="10" ry="5" fill="#3d4570"/>
+    <ellipse cx="130" cy="216" rx="10" ry="5" fill="#3d4570"/>
+    <ellipse cx="66" cy="214" rx="2" ry="1.5" fill="#ffb1c1"/>
+    <ellipse cx="70" cy="212" rx="2" ry="1.5" fill="#ffb1c1"/>
+    <ellipse cx="74" cy="214" rx="2" ry="1.5" fill="#ffb1c1"/>
+    <ellipse cx="126" cy="214" rx="2" ry="1.5" fill="#ffb1c1"/>
+    <ellipse cx="130" cy="212" rx="2" ry="1.5" fill="#ffb1c1"/>
+    <ellipse cx="134" cy="214" rx="2" ry="1.5" fill="#ffb1c1"/>
+    <ellipse cx="100" cy="98" rx="62" ry="56" fill="url(#pandaBody)"/>
+    <circle cx="54" cy="52" r="24" fill="url(#pandaEar)"/>
+    <circle cx="146" cy="52" r="24" fill="url(#pandaEar)"/>
+    <circle cx="54" cy="52" r="14" fill="#4d5680"/>
+    <circle cx="146" cy="52" r="14" fill="#4d5680"/>
+    <circle cx="50" cy="48" r="5" fill="#fff" opacity=".15"/>
+    <circle cx="142" cy="48" r="5" fill="#fff" opacity=".15"/>
+    <ellipse cx="78" cy="100" rx="20" ry="24" fill="url(#pandaBlack)" transform="rotate(-14 78 100)"/>
+    <ellipse cx="122" cy="100" rx="20" ry="24" fill="url(#pandaBlack)" transform="rotate(14 122 100)"/>
+    <ellipse cx="56" cy="122" rx="10" ry="7" fill="#ff8fa6" opacity=".6"/>
+    <ellipse cx="144" cy="122" rx="10" ry="7" fill="#ff8fa6" opacity=".6"/>
+    <ellipse cx="52" cy="119" rx="3" ry="2" fill="#fff" opacity=".7"/>
+    <ellipse cx="140" cy="119" rx="3" ry="2" fill="#fff" opacity=".7"/>
+    <ellipse cx="100" cy="122" rx="7" ry="5.5" fill="#2b3550"/>
+    <ellipse cx="98" cy="120" rx="2.5" ry="1.5" fill="#fff" opacity=".7"/>
+    <path d="M 100 127 Q 94 136 88 130" fill="none" stroke="#2b3550" stroke-width="2.2" stroke-linecap="round"/>
+    <path d="M 100 127 Q 106 136 112 130" fill="none" stroke="#2b3550" stroke-width="2.2" stroke-linecap="round"/>
+    <g class="blink" style="transform-origin:100px 100px">
+      <circle cx="78" cy="100" r="9" fill="#fff"/>
+      <circle cx="122" cy="100" r="9" fill="#fff"/>
+      <circle cx="80" cy="101" r="5.5" fill="#2b3550"/>
+      <circle cx="124" cy="101" r="5.5" fill="#2b3550"/>
+      <circle cx="82" cy="98" r="2" fill="#fff"/>
+      <circle cx="126" cy="98" r="2" fill="#fff"/>
+      <circle cx="77" cy="103" r="1.2" fill="#fff" opacity=".8"/>
+      <circle cx="121" cy="103" r="1.2" fill="#fff" opacity=".8"/>
+    </g>`;
+}
+
+const PET_TYPES = {
+  cat:     { draw: drawCat,     defaultName: 'Мурзик' },
+  dino:    { draw: drawDino,    defaultName: 'Рекс' },
+  penguin: { draw: drawPenguin, defaultName: 'Пингвинчик' },
+  frog:    { draw: drawFrog,    defaultName: 'Квак' },
+  fox:     { draw: drawFox,     defaultName: 'Рыжик' },
+  panda:   { draw: drawPanda,   defaultName: 'Бамбук' }
+};
+
+const ACCESSORIES = [
+  { id: '',           label: 'Нет' },
+  { id: 'hat',        label: 'Шляпа' },
+  { id: 'crown',      label: 'Корона' },
+  { id: 'cap',        label: 'Кепка' },
+  { id: 'bow',        label: 'Бантик' },
+  { id: 'glasses',    label: 'Очки' },
+  { id: 'headphones', label: 'Наушники' }
+];
+
+/* ================================================================
+   ⭐ ОБЁРТКА SVG — ЕДИНАЯ ДЛЯ ВСЕХ МЕСТ
+   Это то, что решает проблему "пустых окошек":
+   теперь каждый SVG получает правильный xmlns и viewBox.
+   ================================================================ */
+function wrapSVG(inner, viewBox){
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${viewBox}">${inner}</svg>`;
+}
+
+const SVG_CACHE = {};
+function getPetSVG(type, accessory){
+  const key = 'pet|' + type + '|' + accessory;
+  if(SVG_CACHE[key]) return SVG_CACHE[key];
+  const pet = PET_TYPES[type] || PET_TYPES.cat;
+  const body = pet.draw();
+  const acc = accessory ? drawAccessory(accessory) : '';
+  const html = wrapSVG(body + acc, '0 0 200 240');
+  SVG_CACHE[key] = html;
+  return html;
+}
+
+/* Мини-версия для селектора питомцев — ТА ЖЕ САМАЯ обёртка SVG */
+function getPetPreviewSVG(type){
+  const key = 'petprev|' + type;
+  if(SVG_CACHE[key]) return SVG_CACHE[key];
+  const pet = PET_TYPES[type];
+  const html = wrapSVG(pet.draw(), '0 0 200 240');
+  SVG_CACHE[key] = html;
+  return html;
+}
+
+/* Превью аксессуара — обёртка SVG с теми же defs */
+function getAccessoryPreviewSVG(kind){
+  if(!kind){
+    return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 60"><circle cx="30" cy="30" r="14" fill="none" stroke="var(--lavender)" stroke-width="3"/><line x1="20" y1="40" x2="40" y2="20" stroke="var(--lavender)" stroke-width="3" stroke-linecap="round"/></svg>`;
+  }
+  const key = 'acc|' + kind;
+  if(SVG_CACHE[key]) return SVG_CACHE[key];
+  const html = wrapSVG(drawAccessory(kind), '0 0 200 240');
+  SVG_CACHE[key] = html;
+  return html;
+}
+
+/* ================= ПИТОМЕЦ ================= */
+const pet = { type: 'cat', name: 'Мурзик', food: 70, mood: 70, energy: 70, accessory: '' };
+const wardrobeEl = document.getElementById('wardrobe');
+const petTypesEl = document.getElementById('petTypes');
+const petSvgWrap = document.getElementById('petSvgWrap');
+const petNameEl = document.getElementById('petName');
+const barFoodEl = document.getElementById('barFood');
+const barMoodEl = document.getElementById('barMood');
+const barEnergyEl = document.getElementById('barEnergy');
+const petMsgEl = document.getElementById('petMsg');
+
+function loadPet(){
+  try{
+    const saved = localStorage.getItem('spokoystvie_pet');
+    if(saved){
+      const p = JSON.parse(saved);
+      Object.assign(pet, p);
+      if(!PET_TYPES[pet.type]) pet.type = 'cat';
+    }
+  }catch(e){}
+}
+let saveTimer = null;
+function savePet(){
+  if(saveTimer) clearTimeout(saveTimer);
+  saveTimer = setTimeout(()=>{
+    try{ localStorage.setItem('spokoystvie_pet', JSON.stringify(pet)); }catch(e){}
+  }, 300);
+}
+
+let lastRendered = '';
+function renderPet(){
+  const sig = pet.type + '|' + pet.accessory;
+  if(sig !== lastRendered){
+    petSvgWrap.innerHTML = getPetSVG(pet.type, pet.accessory);
+    lastRendered = sig;
+  }
+  petNameEl.textContent = pet.name;
+  barFoodEl.style.width = Math.max(0,Math.min(100,pet.food)) + '%';
+  barMoodEl.style.width = Math.max(0,Math.min(100,pet.mood)) + '%';
+  barEnergyEl.style.width = Math.max(0,Math.min(100,pet.energy)) + '%';
+  savePet();
+}
+
+let typesBuilt = false;
+function buildPetTypes(){
+  if(typesBuilt) return;
+  typesBuilt = true;
+  const frag = document.createDocumentFragment();
+  Object.entries(PET_TYPES).forEach(([key, info])=>{
+    const b = document.createElement('button');
+    b.title = info.defaultName;
+    b.dataset.type = key;
+    // ⭐ ТУТ ГЛАВНОЕ ИСПРАВЛЕНИЕ: используем getPetPreviewSVG с полноценной <svg>-обёрткой
+    b.innerHTML = getPetPreviewSVG(key);
+    b.addEventListener('click', ()=>changePetType(key));
+    frag.appendChild(b);
+  });
+  petTypesEl.appendChild(frag);
+}
+
+function updatePetTypesActive(){
+  petTypesEl.querySelectorAll('button').forEach(b=>{
+    b.classList.toggle('on', b.dataset.type === pet.type);
+  });
+}
+
+let wardrobeBuilt = false;
+function buildWardrobe(){
+  if(wardrobeBuilt) return;
+  wardrobeBuilt = true;
+  const frag = document.createDocumentFragment();
+  ACCESSORIES.forEach(a=>{
+    const b = document.createElement('button');
+    b.title = a.label;
+    b.dataset.acc = a.id;
+    b.innerHTML = getAccessoryPreviewSVG(a.id);
+    b.addEventListener('click', ()=>{
+      pet.accessory = a.id;
+      renderPet();
+      updateWardrobeActive();
+      msg(a.id === '' ? 'Аксессуар снят' : 'Как тебе идёт! ✨');
+    });
+    frag.appendChild(b);
+  });
+  wardrobeEl.appendChild(frag);
+}
+
+function updateWardrobeActive(){
+  wardrobeEl.querySelectorAll('button').forEach(b=>{
+    b.classList.toggle('on', b.dataset.acc === pet.accessory);
+  });
+}
+
+function changePetType(key){
+  if(!PET_TYPES[key]) return;
+  pet.type = key;
+  pet.name = PET_TYPES[key].defaultName;
+  msg(`Теперь у тебя ${pet.name}! Познакомься 👋`);
+  jumpPet();
+  renderPet();
+  updatePetTypesActive();
+}
+
+function msg(text){ petMsgEl.textContent = text; }
+
+loadPet();
+buildPetTypes();
+buildWardrobe();
+renderPet();
+updatePetTypesActive();
+updateWardrobeActive();
+
+/* ================= ПУЗЫРЬКИ ================= */
+const bubblesWrap = document.getElementById('bubbles');
+(function spawnBubbles(){
+  const frag = document.createDocumentFragment();
+  for(let i=0;i<10;i++){
+    const b = document.createElement('div');
+    b.className = 'bubble';
+    const size = 40 + Math.random()*90;
+    b.style.width = size + 'px';
+    b.style.height = size + 'px';
+    b.style.left = (Math.random()*100) + '%';
+    b.style.bottom = '-150px';
+    b.style.animationDuration = (18 + Math.random()*16) + 's';
+    b.style.animationDelay = (-Math.random()*30) + 's';
+    frag.appendChild(b);
+  }
+  bubblesWrap.appendChild(frag);
+})();
+
+/* ================= RIPPLE ================= */
+document.addEventListener('click', e=>{
+  const btn = e.target.closest('.btn, .btn-sm, .opt, .pet-actions button, .ttt button, .theme-switch');
+  if(!btn) return;
+  const rect = btn.getBoundingClientRect();
+  const size = Math.max(rect.width, rect.height);
+  const ripple = document.createElement('span');
+  ripple.className = 'ripple';
+  ripple.style.width = ripple.style.height = size + 'px';
+  ripple.style.left = (e.clientX - rect.left - size/2) + 'px';
+  ripple.style.top  = (e.clientY - rect.top  - size/2) + 'px';
+  const isColored = btn.classList.contains('btn-primary') ||
+                    (btn.classList.contains('opt') && btn.classList.contains('on'));
+  ripple.style.background = isColored ? 'rgba(255,255,255,.6)' : 'rgba(108,140,255,.35)';
+  btn.appendChild(ripple);
+  setTimeout(()=>ripple.remove(), 650);
+}, {passive:true});
+
+/* ================= ШАПКА / REVEAL ================= */
+const headerEl = document.getElementById('header');
+let scrollTicking = false;
+window.addEventListener('scroll', ()=>{
+  if(scrollTicking) return;
+  scrollTicking = true;
+  requestAnimationFrame(()=>{
+    headerEl.classList.toggle('scrolled', window.scrollY > 20);
+    scrollTicking = false;
+  });
+}, {passive:true});
+
+const revealObserver = new IntersectionObserver(entries=>{
+  entries.forEach(en=>{
+    if(en.isIntersecting){ en.target.classList.add('visible'); revealObserver.unobserve(en.target); }
+  });
+}, {threshold:.12, rootMargin:'0px 0px -40px 0px'});
+document.querySelectorAll('.reveal').forEach(el=>revealObserver.observe(el));
+
+/* ================= ЛЕНИВАЯ ЗАГРУЗКА — пауза вне экрана ================= */
+const heroEl = document.querySelector('.hero');
+new IntersectionObserver(entries=>{
+  entries.forEach(en=>heroEl.classList.toggle('paused', !en.isIntersecting));
+}, {threshold:0}).observe(heroEl);
+
+const gamesSection = document.getElementById('games');
+new IntersectionObserver(entries=>{
+  entries.forEach(en=>gamesSection.classList.toggle('paused', !en.isIntersecting));
+}, {threshold:0}).observe(gamesSection);
+
+const petSection = document.getElementById('pet');
+new IntersectionObserver(entries=>{
+  entries.forEach(en=>petSection.classList.toggle('paused', !en.isIntersecting));
+}, {threshold:0}).observe(petSection);
+
+document.addEventListener('visibilitychange', ()=>{
+  bubblesWrap.classList.toggle('inactive', document.hidden);
+}, {passive:true});
+
+/* ================= МЕНЮ ================= */
+document.getElementById('burger').addEventListener('click', ()=>{
+  document.getElementById('navList').classList.toggle('open');
+});
+document.querySelectorAll('#navList a').forEach(a=>{
+  a.addEventListener('click', ()=>document.getElementById('navList').classList.remove('open'));
+});
+
+/* ================= ТЕСТ ================= */
+const questions = [
+  "За последние две недели я часто чувствовал(а) подавленность, тоску или безысходность.",
+  "Мне стало труднее получать удовольствие от того, что раньше радовало.",
+  "У меня бывали внезапные приступы сильного страха или паники.",
+  "Мне трудно засыпать, или я часто просыпаюсь ночью.",
+  "Я чувствую постоянную усталость даже после отдыха.",
+  "Мне сложно сосредоточиться на учёбе, работе или чтении.",
+  "Я замечал(а), что избегаю мест или ситуаций из-за страха.",
+  "Я чувствую себя одиноким(ой) даже среди людей.",
+  "У меня бывают мысли, что я никому не нужен(на).",
+  "Мне кажется, что жизнь потеряла смысл или краски."
+];
+const answers = ["Никогда","Редко","Часто","Почти всегда"];
+const scores = [0,1,2,3];
+const userAnswers = new Array(questions.length).fill(null);
+
+const qWrap = document.getElementById('questions');
+(function buildQuestions(){
+  const frag = document.createDocumentFragment();
+  questions.forEach((q,i)=>{
+    const div = document.createElement('div');
+    div.className = 'q';
+    div.innerHTML = `<p>${i+1}. ${q}</p>
+      <div class="opts">
+        ${answers.map((a,j)=>`<button class="opt" data-q="${i}" data-v="${j}">${a}</button>`).join('')}
+      </div>`;
+    frag.appendChild(div);
+  });
+  qWrap.appendChild(frag);
+})();
+
+qWrap.addEventListener('click', e=>{
+  const btn = e.target.closest('.opt');
+  if(!btn) return;
+  const q = +btn.dataset.q, v = +btn.dataset.v;
+  userAnswers[q] = v;
+  qWrap.querySelectorAll(`.opt[data-q="${q}"]`).forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+});
+
+document.getElementById('testBtn').addEventListener('click', ()=>{
+  if(userAnswers.includes(null)){ alert('Пожалуйста, ответь на все вопросы — так результат будет точнее.'); return; }
+  const total = userAnswers.reduce((s,v)=>s+scores[v],0);
+  const max = questions.length * 3;
+  const res = document.getElementById('testResult');
+  const title = document.getElementById('resTitle');
+  const text = document.getElementById('resText');
+  document.getElementById('resScore').textContent = `${total} из ${max} баллов`;
+
+  if(total <= 5){
+    title.textContent = '🌿 Всё выглядит спокойно';
+    text.textContent = 'Признаков сильного стресса почти нет. Продолжай заботиться о себе: сон, движение, отдых и общение.';
+  } else if(total <= 12){
+    title.textContent = '🌤️ Есть лёгкие признаки напряжения';
+    text.textContent = 'Похоже, ты немного устал(а) или перегружен(а). Попробуй больше отдыхать, гулять и не забывать про себя. Если это затянется — поговори с психологом.';
+  } else if(total <= 20){
+    title.textContent = '🌥️ Заметный уровень стресса';
+    text.textContent = 'Твоё состояние явно требует внимания. Расскажи о своих ощущениях взрослому, которому доверяешь, и подумай о консультации со специалистом. Ты заслуживаешь поддержки.';
+  } else {
+    title.textContent = '🌧️ Высокий уровень';
+    text.textContent = 'Тебе сейчас действительно тяжело. Пожалуйста, не оставайся с этим один(одна) — обратись к психологу, школьному психологу или на телефон доверия 8-800-2000-122. Это не слабость, а забота о себе.';
+  }
+  res.classList.add('show');
+  res.scrollIntoView({behavior:'smooth', block:'center'});
+});
+
+/* ================= КРЕСТИКИ-НОЛИКИ ================= */
+let board = Array(9).fill('');
+let gameOver = false;
+const HUMAN = '❌', AI = '⭕';
+const tttBoardEl = document.getElementById('tttBoard');
+const tttStatus = document.getElementById('tttStatus');
+const WIN_LINES = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+const tttButtons = [];
+(function buildTTT(){
+  for(let i=0;i<9;i++){
+    const b = document.createElement('button');
+    b.addEventListener('click', ()=>humanMove(i));
+    tttButtons.push(b);
+    tttBoardEl.appendChild(b);
+  }
+})();
+
+function renderTTT(winLine){
+  for(let i=0;i<9;i++){
+    const b = tttButtons[i];
+    b.textContent = board[i];
+    b.disabled = !!(board[i] || gameOver);
+    b.classList.toggle('win', !!(winLine && winLine.includes(i)));
+  }
+}
+function humanMove(i){
+  if(board[i] || gameOver) return;
+  board[i] = HUMAN;
+  if(checkEnd()) return;
+  setTimeout(aiMove, 350);
+  renderTTT();
+}
+function aiMove(){
+  if(gameOver) return;
+  const best = bestMove(board, AI);
+  board[best] = AI;
+  checkEnd();
+  renderTTT();
+}
+function checkEnd(){
+  for(let li=0; li<WIN_LINES.length; li++){
+    const [a,b,c] = WIN_LINES[li];
+    if(board[a] && board[a]===board[b] && board[a]===board[c]){
+      gameOver = true;
+      renderTTT(WIN_LINES[li]);
+      tttStatus.textContent = board[a] === HUMAN ? '🎉 Ты победил(а)!' : '🤖 Победил компьютер';
+      return true;
+    }
+  }
+  if(!board.includes('')){
+    gameOver = true;
+    renderTTT();
+    tttStatus.textContent = '🤝 Ничья!';
+    return true;
+  }
+  return false;
+}
+function bestMove(b, player){
+  const winner = (bd)=>{
+    for(let i=0;i<WIN_LINES.length;i++){
+      const [x,y,z] = WIN_LINES[i];
+      if(bd[x] && bd[x]===bd[y] && bd[x]===bd[z]) return bd[x];
+    }
+    return bd.includes('') ? null : 'draw';
+  };
+  const minimax = (bd, cur)=>{
+    const w = winner(bd);
+    if(w === AI) return {score: 10};
+    if(w === HUMAN) return {score: -10};
+    if(w === 'draw') return {score: 0};
+    let best = {score: cur===AI ? -Infinity : Infinity, idx:-1};
+    for(let i=0;i<9;i++){
+      if(bd[i]) continue;
+      bd[i] = cur;
+      const r = minimax(bd, cur===AI ? HUMAN : AI).score;
+      bd[i] = '';
+      if(cur === AI ? r > best.score : r < best.score) best = {score:r, idx:i};
+    }
+    return best;
+  };
+  return minimax([...b], player).idx;
+}
+function resetTTT(){
+  board = Array(9).fill('');
+  gameOver = false;
+  tttStatus.textContent = 'Твой ход (❌)';
+  renderTTT();
+}
+resetTTT();
+
+/* ================= КОЛБОЧКИ ================= */
+const CAP = 4;
+const COLORS = {R:'#ff7a8a', B:'#6c8cff', G:'#5fd6a4'};
+let tubes = [];
+let selected = null;
+let moves = 0;
+let tubeDone = false;
+const tubesEl = document.getElementById('tubes');
+const tubeStatus = document.getElementById('tubeStatus');
+const tubeEls = [];
+(function buildTubes(){
+  for(let i=0;i<4;i++){
+    const el = document.createElement('div');
+    el.className = 'tube';
+    el.addEventListener('click', ()=>clickTube(i));
+    tubeEls.push(el);
+    tubesEl.appendChild(el);
+  }
+})();
+
+function shuffleSegments(){
+  const colors = ['R','R','R','R','B','B','B','B','G','G','G','G'];
+  for(let i = colors.length - 1; i > 0; i--){
+    const j = Math.floor(Math.random() * (i + 1));
+    const tmp = colors[i]; colors[i] = colors[j]; colors[j] = tmp;
+  }
+  return [colors.slice(0,4), colors.slice(4,8), colors.slice(8,12), []];
+}
+function isSolved(arr){
+  for(let i=0;i<arr.length;i++){
+    const t = arr[i];
+    if(t.length === 0) continue;
+    if(t.length !== CAP) return false;
+    for(let j=1;j<t.length;j++) if(t[j] !== t[0]) return false;
+  }
+  return true;
+}
+function resetTubes(){
+  let tries = 0;
+  do { tubes = shuffleSegments(); tries++; } while(isSolved(tubes) && tries < 10);
+  selected = null; moves = 0; tubeDone = false;
+  tubeStatus.textContent = 'Ходов: 0';
+  renderTubes();
+}
+let lastTubesSig = '';
+function renderTubes(){
+  const sig = tubes.map(t=>t.join('')).join('|') + '#' + selected;
+  if(sig === lastTubesSig) return;
+  lastTubesSig = sig;
+  for(let i=0;i<4;i++){
+    const el = tubeEls[i];
+    const tube = tubes[i];
+    el.textContent = '';
+    for(let j=0;j<tube.length;j++){
+      const s = document.createElement('div');
+      s.className = 'seg';
+      s.style.background = COLORS[tube[j]];
+      el.appendChild(s);
+    }
+    el.classList.toggle('sel', selected === i);
+  }
+}
+function clickTube(i){
+  if(tubeDone) return;
+  if(selected === null){
+    if(tubes[i].length === 0) return;
+    selected = i; renderTubes(); return;
+  }
+  if(selected === i){ selected = null; renderTubes(); return; }
+  if(pour(selected, i)){
+    moves++;
+    tubeStatus.textContent = 'Ходов: ' + moves;
+    selected = null;
+    renderTubes();
+    checkWin();
+  } else {
+    selected = tubes[i].length > 0 ? i : null;
+    renderTubes();
+    const targetEl = tubeEls[i];
+    if(targetEl){ targetEl.classList.add('shake'); setTimeout(()=>targetEl.classList.remove('shake'), 320); }
+  }
+}
+function pour(from, to){
+  const f = tubes[from];
+  const t = tubes[to];
+  if(f.length === 0) return false;
+  if(t.length >= CAP) return false;
+  const color = f[f.length - 1];
+  let count = 0;
+  for(let k = f.length - 1; k >= 0 && f[k] === color; k--) count++;
+  const space = CAP - t.length;
+  const move = count < space ? count : space;
+  for(let k = 0; k < move; k++){ f.pop(); t.push(color); }
+  return move > 0;
+}
+function checkWin(){
+  if(isSolved(tubes)){
+    tubeDone = true;
+    tubeStatus.textContent = `🎉 Готово за ${moves} ходов! Отличная работа.`;
+  }
+}
+resetTubes();
+
+/* ================= ДЕЙСТВИЯ ПИТОМЦА ================= */
+function feedPet(){
+  pet.food = Math.min(100, pet.food + 22);
+  pet.mood = Math.min(100, pet.mood + 5);
+  msg(`${pet.name} с удовольствием поел(а)! 🍖`);
+  jumpPet(); renderPet();
+}
+function playWithPet(){
+  if(pet.energy < 15){ msg(`${pet.name} слишком устал(а) для игр 😴`); return; }
+  pet.mood = Math.min(100, pet.mood + 20);
+  pet.energy = Math.max(0, pet.energy - 15);
+  pet.food = Math.max(0, pet.food - 10);
+  msg(`Вы весело поиграли! ${pet.name} доволен(на) 🎾`);
+  jumpPet(); renderPet();
+}
+function sleepPet(){
+  pet.energy = Math.min(100, pet.energy + 35);
+  pet.food = Math.max(0, pet.food - 5);
+  msg(`${pet.name} сладко спит... 😴`);
+  renderPet();
+}
+function petPet(){
+  pet.mood = Math.min(100, pet.mood + 8);
+  msg(`${pet.name} радуется твоей ласке 💜`);
+  jumpPet(); renderPet();
+}
+function renamePet(){
+  const n = prompt('Как назовём питомца?', pet.name);
+  if(n && n.trim()){
+    pet.name = n.trim().slice(0,16);
+    msg(`Теперь питомца зовут ${pet.name}!`);
+    renderPet();
+  }
+}
+function jumpPet(){
+  petSvgWrap.classList.remove('jump');
+  void petSvgWrap.offsetWidth;
+  petSvgWrap.classList.add('jump');
+}
+
+/* ================= Падение показателей — только при активной вкладке ================= */
+let decayTimer = null;
+function startDecay(){
+  if(decayTimer) return;
+  decayTimer = setInterval(()=>{
+    if(document.hidden) return;
+    if(pet.food > 0) pet.food = Math.max(0, pet.food - 1);
+    if(pet.mood > 0) pet.mood = Math.max(0, pet.mood - 0.6);
+    if(pet.energy > 0) pet.energy = Math.max(0, pet.energy - 0.4);
+    barFoodEl.style.width = Math.max(0,Math.min(100,pet.food)) + '%';
+    barMoodEl.style.width = Math.max(0,Math.min(100,pet.mood)) + '%';
+    barEnergyEl.style.width = Math.max(0,Math.min(100,pet.energy)) + '%';
+    savePet();
+  }, 12000);
+}
+function stopDecay(){
+  if(decayTimer){ clearInterval(decayTimer); decayTimer = null; }
+}
+document.addEventListener('visibilitychange', ()=>{
+  if(document.hidden) stopDecay();
+  else startDecay();
+}, {passive:true});
+startDecay();
+</script>
+</body>
+</html>
